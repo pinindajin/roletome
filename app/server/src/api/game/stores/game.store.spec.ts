@@ -45,7 +45,24 @@ describe('GameService', () => {
 
   describe('find', async () => {
     const testCases = [
-      [],
+      [
+        new StoreFindRequest({
+          pageOffset: 0,
+          pageSize: 5,
+        }) ,
+        [
+          [
+          ],
+          5,
+        ],
+        new StoreFindResponse<Game>({
+          pageSize: 5,
+          pageNumber: 1,
+          values: [],
+          moreRecords: false,
+          totalRecords: 5,
+        }),
+      ],
     ];
 
     each(testCases).it(
