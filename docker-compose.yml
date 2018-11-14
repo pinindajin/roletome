@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  postgresql:
+    image: 'bitnami/postgresql:latest'
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./docker/var/lib/postgres:/var/lib/postgres
+    environment:
+      - POSTGRESQL_USERNAME=stackroll_worker
+      - POSTGRESQL_PASSWORD=t0ps3cr3t
+      - POSTGRESQL_DATABASE=stackroll_db

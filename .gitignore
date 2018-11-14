@@ -1,0 +1,47 @@
+#client
+app/client/node_modules
+app/client/dist
+app/client/test/unit/coverage
+app/client/test/e2e/reports
+
+
+# server
+app/server/node_modules
+app/server/dist
+app/server/tmp
+app/server/out-tsc
+app/server/e2e/*.js
+app/server/e2e/*.map
+app/server/.env
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+.vscode
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+/.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+.env
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
