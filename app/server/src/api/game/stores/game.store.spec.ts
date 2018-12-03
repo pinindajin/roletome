@@ -49,18 +49,21 @@ describe('GameService', () => {
         new StoreFindRequest({
           pageOffset: 0,
           pageSize: 5,
-        }) ,
+        }),
         [
-          [
-          ],
-          5,
+          mockGames.slice(10, 15).map(g => new Game({
+            id: g.id,
+            name: g.name,
+            description: g.description,
+          })),
+          105,
         ],
         new StoreFindResponse<Game>({
           pageSize: 5,
           pageNumber: 1,
-          values: [],
-          moreRecords: false,
-          totalRecords: 5,
+          values: mockGames.slice(10, 15),
+          moreRecords: true,
+          totalRecords: 105,
         }),
       ],
     ];
@@ -84,5 +87,15 @@ describe('GameService', () => {
         expect(result).toEqual(expected);
       },
     );
+  });
+
+  describe('findOne', async () => {
+    const testCases = [
+
+    ];
+
+    it('should return correct record', async () => {
+      
+    });
   });
 });
