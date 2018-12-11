@@ -32,7 +32,7 @@ export class GameStore implements IGameStore {
           .filter(id => !fetchedIds.includes(id));
         return new StoreFindResponse<Game>({
           pageNumber: (Math.ceil(request.pageOffset / request.pageSize) + 1),
-          pageSize: request.pageSize,
+          pageSize: games.length,
           totalRecords: count,
           values: games,
           unfetchedIds,
@@ -49,7 +49,7 @@ export class GameStore implements IGameStore {
         });
         return new StoreFindResponse<Game>({
           pageNumber: (Math.ceil(request.pageOffset / request.pageSize) + 1),
-          pageSize: request.pageSize,
+          pageSize: games.length,
           totalRecords: count,
           values: games,
           moreRecords: (request.pageOffset + request.pageSize) < count,

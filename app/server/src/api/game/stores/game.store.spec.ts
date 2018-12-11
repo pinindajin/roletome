@@ -51,19 +51,40 @@ describe('GameService', () => {
           pageSize: 5,
         }),
         [
-          mockGames.slice(10, 15).map(g => new Game({
+          mockGames.slice(10, 15).map(g => new DbGame({
             id: g.id,
             name: g.name,
             description: g.description,
           })),
-          105,
+          mockGames.length,
         ],
         new StoreFindResponse<Game>({
           pageSize: 5,
           pageNumber: 1,
           values: mockGames.slice(10, 15),
           moreRecords: true,
-          totalRecords: 105,
+          totalRecords: mockGames.length,
+        }),
+      ],
+      [
+        new StoreFindRequest({
+          pageOffset: 150,
+          pageSize: 50,
+        }),
+        [
+          mockGames.slice(150).map(g => new DbGame({
+            id: g.id,
+            name: g.name,
+            description: g.description,
+          })),
+          mockGames.length,
+        ],
+        new StoreFindResponse<Game>({
+          pageSize: 36,
+          pageNumber: 4,
+          values: mockGames.slice(150),
+          moreRecords: false,
+          totalRecords: mockGames.length,
         }),
       ],
     ];
@@ -91,11 +112,37 @@ describe('GameService', () => {
 
   describe('findOne', async () => {
     const testCases = [
-
+      [
+        mockGames[55].id,
+        new DbGame({
+          id: mockGames[55].id,
+          name: mockGames[55].name,
+          description: mockGames[55].description,
+        }),
+        mockGames[55],
+      ],
+      [
+        '41b61362-4531-4d20-8ebb-974fc59175ec',
+        null,
+        null,
+      ],
     ];
 
-    it('should return correct record', async () => {
-      
+    each(testCases).it('should return correct record', async (
+      request: string,
+      mockResponse: DbGame,
+      expected: StoreFindResponse<Game>,
+    ) => {
+      // arrange
+      jest
+        .spyOn(mockRepository, 'findOne')
+        .mockImplementation(() => mockResponse);
+
+      // act
+      const result = await gameStore.findOne(request);
+
+      // assert
+      expect(result).toEqual(expected);
     });
   });
 });

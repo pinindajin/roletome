@@ -1,5 +1,6 @@
 import { Game } from '../../../../api/game/models/domain';
 
+// 186 records as of Dec 11 2018
 export const getMockGames = () => {
   return [
     new Game({
