@@ -89,9 +89,7 @@ describe('GameService', () => {
       ],
     ];
 
-    each(testCases).it(
-      'should page correctly',
-      async (
+    each(testCases).it('should page correctly', async (
         request: StoreFindRequest,
         mockResponse: [DbGame[], number],
         expected: StoreFindResponse<Game>,
@@ -108,6 +106,33 @@ describe('GameService', () => {
         expect(result).toEqual(expected);
       },
     );
+  });
+
+  xdescribe('findByIds', async () => {
+    const testCases = [
+      [
+        new StoreFindRequest(),
+        [[new DbGame()], 0],
+        new StoreFindResponse<Game>(),
+      ],
+    ];
+
+    each(testCases).it('should retrieve correct records', async (
+        request: StoreFindRequest,
+        mockResponse: [DbGame[], number],
+        expected: StoreFindResponse<Game>,
+    ) => {
+      // arrange
+      jest
+        .spyOn(gameStore, 'repoFindByIds')
+        .mockImplementation(() => mockResponse);
+
+      // act
+      const result = await gameStore.find(request);
+
+      // assert
+      expect(result).toEqual(expected);
+    });
   });
 
   describe('findOne', async () => {

@@ -6,7 +6,7 @@ import { DbGame } from '../../../db/typeOrm/dbModels/game/game.entity';
 import { StoreSaveResponse } from '../../../common/models/storeSaveResponse.model';
 import { StoreFindResponse } from '../../../common/models/storeFindResponse.model';
 import { StoreFindRequest } from '../../../common/models/storeFindRequest.model';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { json } from 'body-parser';
 import { v4 as uuid } from 'uuid';
 
@@ -19,7 +19,7 @@ export class GameStore implements IGameStore {
   async find(request: StoreFindRequest): Promise<StoreFindResponse<Game>> {
     try {
       if (request.ids && request.ids.length > 0) {
-        const [dbGames, count] = await this.repoFindById(request.ids, request.pageOffset, request.pageSize);
+        const [dbGames, count] = await this.repoFindByIds(request.ids, request.pageOffset, request.pageSize);
         const games = dbGames.map(dbGame => {
           return new Game({
             id: dbGame.id,
@@ -55,6 +55,33 @@ export class GameStore implements IGameStore {
           moreRecords: (request.pageOffset + request.pageSize) < count,
         });
       }
+    }
+    catch (err) {
+      this.logAndThrow(err);
+    }
+  }
+
+  async findByIds(request: StoreFindRequest): Promise<StoreFindResponse<Game>> {
+    try {
+      const [dbGames, count] = await this.repoFindByIds(request.ids, request.pageOffset, request.pageSize);
+      const games = dbGames.map(dbGame => {
+        return new Game({
+          id: dbGame.id,
+          name: dbGame.name,
+          description: dbGame.description,
+        });
+      });
+      const fetchedIds = games.map(game => game.id);
+      const unfetchedIds = request.ids
+        .filter(id => !fetchedIds.includes(id));
+      return new StoreFindResponse<Game>({
+        pageNumber: (Math.ceil(request.pageOffset / request.pageSize) + 1),
+        pageSize: games.length,
+        totalRecords: count,
+        values: games,
+        unfetchedIds,
+        moreRecords: (request.pageOffset + request.pageSize) < count,
+      });
     }
     catch (err) {
       this.logAndThrow(err);
@@ -142,7 +169,7 @@ export class GameStore implements IGameStore {
     }
   }
 
-  async repoFindById(ids: Array<string>, pageOffset: number, pageSize: number): Promise<[DbGame[], number]> {
+  async repoFindByIds(ids: Array<string>, pageOffset: number, pageSize: number): Promise<[DbGame[], number]> {
     return await this.store
       .createQueryBuilder()
       .select('game')
