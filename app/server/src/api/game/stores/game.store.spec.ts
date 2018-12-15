@@ -108,12 +108,30 @@ describe('GameService', () => {
     );
   });
 
-  xdescribe('findByIds', async () => {
+  describe('findByIds', async () => {
     const testCases = [
       [
-        new StoreFindRequest(),
-        [[new DbGame()], 0],
-        new StoreFindResponse<Game>(),
+        new StoreFindRequest({
+          ids: [...mockGames.slice(50, 65).map(g => g.id)],
+          pageSize: 100,
+          pageOffset: 0,
+        }),
+        [
+          [...mockGames.slice(50, 65).map(g => new DbGame({
+            id: g.id,
+            name: g.name,
+            description: g.description,
+          }))],
+          15,
+        ],
+        new StoreFindResponse<Game>({
+          pageSize: 15,
+          pageNumber: 1,
+          values: mockGames.slice(50, 65),
+          unfetchedIds: [],
+          moreRecords: false,
+          totalRecords: 15,
+        }),
       ],
     ];
 
