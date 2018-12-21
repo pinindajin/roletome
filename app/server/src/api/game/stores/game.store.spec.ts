@@ -45,12 +45,51 @@ describe('GameService', () => {
 
   describe('find', async () => {
     const testCases = [
-      [],
+      [
+        new StoreFindRequest({
+          pageOffset: 0,
+          pageSize: 5,
+        }),
+        [
+          mockGames.slice(10, 15).map(g => new DbGame({
+            id: g.id,
+            name: g.name,
+            description: g.description,
+          })),
+          mockGames.length,
+        ],
+        new StoreFindResponse<Game>({
+          pageSize: 5,
+          pageNumber: 1,
+          values: mockGames.slice(10, 15),
+          moreRecords: true,
+          totalRecords: mockGames.length,
+        }),
+      ],
+      [
+        new StoreFindRequest({
+          pageOffset: 150,
+          pageSize: 50,
+        }),
+        [
+          mockGames.slice(150).map(g => new DbGame({
+            id: g.id,
+            name: g.name,
+            description: g.description,
+          })),
+          mockGames.length,
+        ],
+        new StoreFindResponse<Game>({
+          pageSize: 36,
+          pageNumber: 4,
+          values: mockGames.slice(150),
+          moreRecords: false,
+          totalRecords: mockGames.length,
+        }),
+      ],
     ];
 
-    each(testCases).it(
-      'should page correctly',
-      async (
+    each(testCases).it('should page correctly', async (
         request: StoreFindRequest,
         mockResponse: [DbGame[], number],
         expected: StoreFindResponse<Game>,
@@ -67,5 +106,86 @@ describe('GameService', () => {
         expect(result).toEqual(expected);
       },
     );
+  });
+
+  describe('findByIds', async () => {
+    const testCases = [
+      [
+        new StoreFindRequest({
+          ids: [...mockGames.slice(50, 65).map(g => g.id)],
+          pageSize: 100,
+          pageOffset: 0,
+        }),
+        [
+          [...mockGames.slice(50, 65).map(g => new DbGame({
+            id: g.id,
+            name: g.name,
+            description: g.description,
+          }))],
+          15,
+        ],
+        new StoreFindResponse<Game>({
+          pageSize: 15,
+          pageNumber: 1,
+          values: mockGames.slice(50, 65),
+          unfetchedIds: [],
+          moreRecords: false,
+          totalRecords: 15,
+        }),
+      ],
+    ];
+
+    each(testCases).it('should retrieve correct records', async (
+        request: StoreFindRequest,
+        mockResponse: [DbGame[], number],
+        expected: StoreFindResponse<Game>,
+    ) => {
+      // arrange
+      jest
+        .spyOn(gameStore, 'repoFindByIds')
+        .mockImplementation(() => mockResponse);
+
+      // act
+      const result = await gameStore.find(request);
+
+      // assert
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('findOne', async () => {
+    const testCases = [
+      [
+        mockGames[55].id,
+        new DbGame({
+          id: mockGames[55].id,
+          name: mockGames[55].name,
+          description: mockGames[55].description,
+        }),
+        mockGames[55],
+      ],
+      [
+        '41b61362-4531-4d20-8ebb-974fc59175ec',
+        null,
+        null,
+      ],
+    ];
+
+    each(testCases).it('should return correct record', async (
+      request: string,
+      mockResponse: DbGame,
+      expected: StoreFindResponse<Game>,
+    ) => {
+      // arrange
+      jest
+        .spyOn(mockRepository, 'findOne')
+        .mockImplementation(() => mockResponse);
+
+      // act
+      const result = await gameStore.findOne(request);
+
+      // assert
+      expect(result).toEqual(expected);
+    });
   });
 });

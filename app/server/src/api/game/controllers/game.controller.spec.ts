@@ -63,6 +63,7 @@ describe('GameController', () => {
           pageNumber: 1,
           values: mockGames.slice(0, 5),
           moreRecords: true,
+          totalRecords: mockGames.length,
         }),
         new GetGamesResponse({
           pageSize: 5,
@@ -70,6 +71,7 @@ describe('GameController', () => {
           numberOfRecords: 5,
           nextPageLink: 'api/game?pageSize=5&pageOffset=5',
           games: mockGames.slice(0, 5),
+          totalRecords: mockGames.length,
         }),
       ],
       [
@@ -82,6 +84,7 @@ describe('GameController', () => {
           pageNumber: 2,
           values: mockGames.slice(5, 10),
           moreRecords: true,
+          totalRecords: mockGames.length,
         }),
         new GetGamesResponse({
           pageSize: 5,
@@ -89,25 +92,28 @@ describe('GameController', () => {
           numberOfRecords: 5,
           nextPageLink: 'api/game?pageSize=5&pageOffset=10',
           games: mockGames.slice(5, 10),
+          totalRecords: mockGames.length,
         }),
       ],
       [
         new GetGamesRequest({
-          pageOffset: 15,
-          pageSize: 5,
+          pageOffset: 180,
+          pageSize: 20,
         }),
         new ServiceFindResponse<Game>({
-          pageSize: 5,
-          pageNumber: 4,
-          values: mockGames.slice(mockGames.length - 1),
+          pageSize: 6,
+          pageNumber: 10,
+          values: mockGames.slice(180),
           moreRecords: false,
+          totalRecords: mockGames.length,
         }),
         new GetGamesResponse({
-          pageSize: 5,
-          pageNumber: 4,
-          numberOfRecords: 1,
+          pageSize: 6,
+          pageNumber: 10,
+          numberOfRecords: 6,
           nextPageLink: null,
-          games: mockGames.slice(mockGames.length - 1),
+          games: mockGames.slice(180),
+          totalRecords: mockGames.length,
         }),
       ],
     ];
