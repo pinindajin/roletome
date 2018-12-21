@@ -1,9 +1,20 @@
-#client
+# client
 app/client/node_modules
 app/client/dist
 app/client/test/unit/coverage
 app/client/test/e2e/reports
-
+app/client/tmp
+app/client/out-tsc
+app/client/.sass-cache
+app/client/connect.lock
+app/client/coverage
+app/client/libpeerconnection.log
+app/client/npm-debug.log
+app/client/yarn-error.log
+app/client/testem.log
+app/client/typings
+app/client/chrome-profiler-events.json
+app/client/speed-measure-plugin.json
 
 # server
 app/server/node_modules
