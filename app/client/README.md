@@ -1,49 +1,27 @@
-# stackroll
+# RoleTome
 
-> tabletop game dice rolling app
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
 
-## Build Setup
+## Development server
 
-``` bash
-# install dependencies
-npm install
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-# serve with hot reload at localhost:8080
-npm run dev
+## Code scaffolding
 
-# build for production with minification
-npm run build
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-# build for production and view the bundle analyzer report
-npm run build --report
+## Build
 
-# run unit tests
-npm run unit
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-# run e2e tests
-npm run e2e
+## Running unit tests
 
-# run all tests
-npm test
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-# build for production and cordova build.
-npm run cordova-build
+## Running end-to-end tests
 
-# build for production and serve the app through the browser - no hot reload.
-npm run browser
+Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
-# add respective platforms
-cordova platform add android
-cordova platform add ios
+## Further help
 
-# build for production and serve the app on an iOS device
-npm run ios
-
-# build for production and serve the app on an android device (won't serve on a virtual device)
-npm run android
-
-# build for production and serve the app on an android device (will serve on a virtual device or physical device - prefers virtual)
-npm run android-vm
-```
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
