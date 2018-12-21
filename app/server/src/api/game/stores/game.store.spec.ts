@@ -46,10 +46,12 @@ describe('GameService', () => {
   describe('find', async () => {
     const testCases = [
       [
+        // request
         new StoreFindRequest({
           pageOffset: 0,
           pageSize: 5,
         }),
+        // mock response
         [
           mockGames.slice(10, 15).map(g => new DbGame({
             id: g.id,
@@ -58,6 +60,7 @@ describe('GameService', () => {
           })),
           mockGames.length,
         ],
+        // expected
         new StoreFindResponse<Game>({
           pageSize: 5,
           pageNumber: 1,
@@ -67,10 +70,12 @@ describe('GameService', () => {
         }),
       ],
       [
+        // request
         new StoreFindRequest({
           pageOffset: 150,
           pageSize: 50,
         }),
+        // mock response
         [
           mockGames.slice(150).map(g => new DbGame({
             id: g.id,
@@ -79,6 +84,7 @@ describe('GameService', () => {
           })),
           mockGames.length,
         ],
+        // expected
         new StoreFindResponse<Game>({
           pageSize: 36,
           pageNumber: 4,
@@ -111,11 +117,13 @@ describe('GameService', () => {
   describe('findByIds', async () => {
     const testCases = [
       [
+        // request
         new StoreFindRequest({
           ids: [...mockGames.slice(50, 65).map(g => g.id)],
           pageSize: 100,
           pageOffset: 0,
         }),
+        // mock response
         [
           [...mockGames.slice(50, 65).map(g => new DbGame({
             id: g.id,
@@ -124,6 +132,7 @@ describe('GameService', () => {
           }))],
           15,
         ],
+        // expected
         new StoreFindResponse<Game>({
           pageSize: 15,
           pageNumber: 1,
@@ -156,17 +165,23 @@ describe('GameService', () => {
   describe('findOne', async () => {
     const testCases = [
       [
+        // request
         mockGames[55].id,
+        // mock response
         new DbGame({
           id: mockGames[55].id,
           name: mockGames[55].name,
           description: mockGames[55].description,
         }),
+        // expected
         mockGames[55],
       ],
       [
+        // request
         '41b61362-4531-4d20-8ebb-974fc59175ec',
+        // mock response
         null,
+        // expected
         null,
       ],
     ];
@@ -174,7 +189,7 @@ describe('GameService', () => {
     each(testCases).it('should return correct record', async (
       request: string,
       mockResponse: DbGame,
-      expected: StoreFindResponse<Game>,
+      expected: Game,
     ) => {
       // arrange
       jest

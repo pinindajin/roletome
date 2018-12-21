@@ -54,10 +54,12 @@ describe('GameController', () => {
   describe('find', async () => {
     const testCases = [
       [
+        // request
         new GetGamesRequest({
           pageOffset: 0,
           pageSize: 5,
         }),
+        // mock response
         new ServiceFindResponse<Game>({
           pageSize: 5,
           pageNumber: 1,
@@ -65,6 +67,7 @@ describe('GameController', () => {
           moreRecords: true,
           totalRecords: mockGames.length,
         }),
+        // expected
         new GetGamesResponse({
           pageSize: 5,
           pageNumber: 1,
@@ -75,10 +78,12 @@ describe('GameController', () => {
         }),
       ],
       [
+        // request
         new GetGamesRequest({
           pageOffset: 5,
           pageSize: 5,
         }),
+        // mock response
         new ServiceFindResponse<Game>({
           pageSize: 5,
           pageNumber: 2,
@@ -86,6 +91,7 @@ describe('GameController', () => {
           moreRecords: true,
           totalRecords: mockGames.length,
         }),
+        // expected
         new GetGamesResponse({
           pageSize: 5,
           pageNumber: 2,
@@ -96,10 +102,12 @@ describe('GameController', () => {
         }),
       ],
       [
+        // request
         new GetGamesRequest({
           pageOffset: 180,
           pageSize: 20,
         }),
+        // mock response
         new ServiceFindResponse<Game>({
           pageSize: 6,
           pageNumber: 10,
@@ -107,6 +115,7 @@ describe('GameController', () => {
           moreRecords: false,
           totalRecords: mockGames.length,
         }),
+        // expected
         new GetGamesResponse({
           pageSize: 6,
           pageNumber: 10,
@@ -142,19 +151,25 @@ describe('GameController', () => {
   describe('findOne', async () => {
     const testCases = [
       [
+        // request
         '04c4e4c1-d003-443f-884e-9edf083498e9',
+        // mock response
         null,
+        // expected
         new GetGameResponse({
           game: null,
         }),
       ],
       [
+        // request
         '11a02ddc-0653-459d-a423-9e3dd70c7ff6',
+        // mock response
         new Game({
           id: '11a02ddc-0653-459d-a423-9e3dd70c7ff6',
           name: 'Poppy',
           description: 'LoL RPG',
         }),
+        // expected
         new GetGameResponse({
           game: new Game({
             id: '11a02ddc-0653-459d-a423-9e3dd70c7ff6',
@@ -164,12 +179,15 @@ describe('GameController', () => {
         }),
       ],
       [
+        // request
         'b9a2ee6f-c4a1-46b5-b4f6-78794fb472c6',
+        // mock response
         new Game({
           id: 'b9a2ee6f-c4a1-46b5-b4f6-78794fb472c6',
           name: 'Zinka Weirna',
           description: 'Monk/Cleric Build',
         }),
+        // expected
         new GetGameResponse({
           game: new Game({
             id: 'b9a2ee6f-c4a1-46b5-b4f6-78794fb472c6',
@@ -200,6 +218,7 @@ describe('GameController', () => {
   describe('create', async () => {
     const testCases = [
       [
+        // request
         new CreateGamesRequest({
           gamesToCreate: [
             new GameToCreate({
@@ -216,6 +235,7 @@ describe('GameController', () => {
             }),
           ],
         }),
+        // mock response
         new ServiceModifyResponse({
           ids: [
             '1d967746-1134-4e91-a132-abb0df58df7b',
@@ -223,6 +243,7 @@ describe('GameController', () => {
             '69d39b9c-07a7-4a6e-8e08-41b57b880359',
           ],
         }),
+        // expected
         new CreateGamesResponse({
           ids: [
             '1d967746-1134-4e91-a132-abb0df58df7b',
@@ -239,6 +260,7 @@ describe('GameController', () => {
         }),
       ],
       [
+        // request
         new CreateGamesRequest({
           gamesToCreate: [
             new GameToCreate({
@@ -247,9 +269,11 @@ describe('GameController', () => {
             }),
           ],
         }),
+        // mock response
         new ServiceModifyResponse({
           ids: ['e94a0494-c649-4e37-a5eb-879d9923e183'],
         }),
+        // expected
         new CreateGamesResponse({
           ids: ['e94a0494-c649-4e37-a5eb-879d9923e183'],
           links: [
@@ -287,6 +311,7 @@ describe('GameController', () => {
   describe('update', async () => {
     const testCases = [
       [
+        // request
         new UpdateGamesRequest({
           gamesToUpdate: [
             new GameToUpdate({
@@ -304,6 +329,7 @@ describe('GameController', () => {
             }),
           ],
         }),
+        // mock response
         new ServiceModifyResponse({
           ids: [
             'fc51d387-f4dc-46b1-bf28-3f71907f2686',
@@ -311,6 +337,7 @@ describe('GameController', () => {
             '7ba3015a-524a-4d8e-b585-3247f76a3d01',
           ],
         }),
+        // expected
         new UpdateGamesResponse({
           ids: [
             'fc51d387-f4dc-46b1-bf28-3f71907f2686',
@@ -352,6 +379,7 @@ describe('GameController', () => {
   describe('delete', async () => {
     const testCases = [
       [
+        // request
         new DeleteGamesRequest({
           ids: [
             '6026ee82-c6a9-4480-98e9-15d39781c127',
@@ -359,6 +387,7 @@ describe('GameController', () => {
             '1c6e0085-a78c-47e6-8cc3-bc96bcf8193e',
           ],
         }),
+        // mock response
         new ServiceModifyResponse({
           ids: [
             '6026ee82-c6a9-4480-98e9-15d39781c127',
@@ -366,6 +395,7 @@ describe('GameController', () => {
             '1c6e0085-a78c-47e6-8cc3-bc96bcf8193e',
           ],
         }),
+        // expected
         new DeleteGamesResponse({
           ids: [
             '6026ee82-c6a9-4480-98e9-15d39781c127',
