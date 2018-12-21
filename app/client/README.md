@@ -1,4 +1,4 @@
-# stackroll
+# roletome
 
 > tabletop game dice rolling app
 

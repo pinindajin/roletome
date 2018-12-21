@@ -8,6 +8,6 @@ services:
     volumes:
       - ./docker/var/lib/postgres:/var/lib/postgres
     environment:
-      - POSTGRESQL_USERNAME=stackroll_worker
+      - POSTGRESQL_USERNAME=roletome_worker
       - POSTGRESQL_PASSWORD=t0ps3cr3t
-      - POSTGRESQL_DATABASE=stackroll_db
+      - POSTGRESQL_DATABASE=roletome_db
