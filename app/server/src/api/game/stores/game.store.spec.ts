@@ -203,4 +203,30 @@ describe('GameService', () => {
       expect(result).toEqual(expected);
     });
   });
+
+  xdescribe('create', async () => {
+    const testCases = [
+      [
+        mockGames.slice(50, 82),
+
+      ],
+    ];
+
+    each(testCases).it('should create record', async (
+      games: Array<Game> ,
+      mockResponse: Array<DbGame>,
+      expected: StoreSaveResponse<string>,
+    ) => {
+      // arrange
+      jest
+        .spyOn(mockRepository, 'findOne')
+        .mockImplementation(() => mockResponse);
+
+      // act
+      const result = await gameStore.create(games);
+
+      // assert
+      expect(result).toEqual(expected);
+    });
+  });
 });
