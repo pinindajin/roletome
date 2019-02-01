@@ -9,6 +9,17 @@ TSC_CONFIG = tsconfig.json
 TSLINT = $(BIN)/tslint
 TS_SRC = $(shell find Server -type f -name "*.ts")
 
+###########
+# General #
+###########
+
+##########
+# Client #
+##########
+
+##########
+# Server #
+##########
 .PHONY: server-test
 server-test:
 	cd app/server && npm run test
