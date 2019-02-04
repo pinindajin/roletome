@@ -2,7 +2,7 @@
   "name": "roletome-server",
   "version": "0.0.0",
   "description": "description",
-  "author": "pinin + shake",
+  "author": "pinindajin",
   "license": "MIT",
   "scripts": {
     "format": "prettier --write \"**/*.ts\"",

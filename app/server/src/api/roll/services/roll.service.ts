@@ -1,14 +1,14 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { IRollService } from '../interfaces/IRollService.interface';
-import { ServiceFindResponse } from 'common/models/serviceFindResponse.model';
+import { ServiceFindResponse } from '../../../common/models/serviceFindResponse.model';
 import { Roll } from '../models/domain/roll.model';
 import { GetRollsRequest } from '../models/dtos/getRoll.dto';
 import { CreateRollsRequest } from '../models/dtos/createRoll.dto';
-import { ServiceModifyResponse } from 'common/models/serviceModifyResponse.model';
+import { ServiceModifyResponse } from '../../../common/models/serviceModifyResponse.model';
 import { UpdateRollsRequest } from '../models/dtos/updateRoll.dto';
 import { DeleteRollsRequest } from '../models/dtos/deleteRoll.dto';
 import { IRollStore } from '../interfaces/IRollStore.interface';
-import { StoreFindRequest } from 'common/models/storeFindRequest.model';
+import { StoreFindRequest } from '../../../common/models/storeFindRequest.model';
 
 @Injectable()
 export class RollService implements IRollService {

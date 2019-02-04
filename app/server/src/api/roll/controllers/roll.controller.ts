@@ -1,15 +1,15 @@
-import { ICRUDController } from 'common/interfaces/controller/ICrudController.interface';
+import { ICRUDController } from '../../../common/interfaces/controller/ICrudController.interface';
 import { Controller, Inject, Query, ValidationPipe, Get, Body, Post } from '@nestjs/common';
-import { APPCONFIGKEYS, APP_CONFIG } from 'config/appConfig.config';
+import { APPCONFIGKEYS, APP_CONFIG } from '../../../config/appConfig.config';
 import { RollService } from '../services/roll.service';
 import { GetRollsResponse, GetRollsRequest } from '../models/dtos/getRoll.dto';
 import { Roll } from '../models/domain/roll.model';
-import { ValidateUUIDPipe } from 'common/pipes/validate-uuid.pipe';
+import { ValidateUUIDPipe } from '../../../common/pipes/validate-uuid.pipe';
 import { DeleteRollsRequest, DeleteRollsResponse } from '../models/dtos/deleteRoll.dto';
 import { CreateRollsRequest, CreateRollsResponse } from '../models/dtos/createRoll.dto';
 import { UpdateRollsRequest, UpdateRollsResponse } from '../models/dtos/updateRoll.dto';
-import { Hyperlink } from 'common/models/hyperlink.model';
-import { HTTPVERB } from 'common/models/httpVerb.type';
+import { Hyperlink } from '../../../common/models/hyperlink.model';
+import { HTTPVERB } from '../../../common/models/httpVerb.type';
 
 @Controller(`api/${APP_CONFIG.CONTROLLER_CONFIGS.get(APPCONFIGKEYS.ROLL_ENDPOINT)}`)
 export class RollController implements ICRUDController {
