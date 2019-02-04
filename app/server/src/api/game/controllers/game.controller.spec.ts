@@ -31,10 +31,10 @@ const l = console.log;
 describe('GameController', () => {
   let gameController: GameController;
   let mockGameService: MockGameService;
-  const mockGames = getMockGames();
-  const appDomain = process.env.APP_DOMAIN;
-  const appPort = process.env.APP_PORT;
-  const gameEndpoint = process.env.GAME_ENDPOINT;
+  const mockGames: Array<Game> = getMockGames();
+  const appDomain: string = process.env.APP_DOMAIN;
+  const appPort: string = process.env.APP_PORT;
+  const gameEndpoint: string = process.env.GAME_ENDPOINT;
 
   beforeAll(async () => {
     const mockGameServiceProvider = {

@@ -21,13 +21,13 @@ import { DbGame } from '../../../db/typeOrm/dbModels/game/game.entity';
 import { StoreFindRequest } from '../../../common/models/storeFindRequest.model';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
-describe('GameService', () => {
+describe('GameStore', () => {
   let gameStore: GameStore;
   let mockRepository: Repository<DbGame>;
-  const mockGames = getMockGames();
-  const appDomain = process.env.APP_DOMAIN;
-  const appPort = process.env.APP_PORT;
-  const gameEndpoint = process.env.GAME_ENDPOINT;
+  const mockGames: Array<Game> = getMockGames();
+  const appDomain: string = process.env.APP_DOMAIN;
+  const appPort: string = process.env.APP_PORT;
+  const gameEndpoint: string = process.env.GAME_ENDPOINT;
 
   beforeAll(async () => {
     const mockGameRepoProvider = {
@@ -174,7 +174,7 @@ describe('GameService', () => {
           description: mockGames[55].description,
         }),
         // expected
-        mockGames[55],
+        new DbGame({...mockGames[55]}),
       ],
       [
         // request
@@ -204,11 +204,14 @@ describe('GameService', () => {
     });
   });
 
-  xdescribe('create', async () => {
+  describe('create', async () => {
     const testCases = [
       [
         mockGames.slice(50, 82),
-
+        mockGames.slice(50, 82).map(g => new DbGame({...g})),
+        new StoreSaveResponse<string>({
+          values: mockGames.slice(50, 82).map(g => g.id),
+        }),
       ],
     ];
 
@@ -219,7 +222,7 @@ describe('GameService', () => {
     ) => {
       // arrange
       jest
-        .spyOn(mockRepository, 'findOne')
+        .spyOn(mockRepository, 'save')
         .mockImplementation(() => mockResponse);
 
       // act

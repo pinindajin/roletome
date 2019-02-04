@@ -20,10 +20,10 @@ import { DeleteGamesRequest } from '../models/dtos/deleteGameDto.dto';
 describe('GameService', () => {
   let gameService: GameService;
   let mockGameStore: MockGameStore;
-  const mockGames = getMockGames();
-  const appDomain = process.env.APP_DOMAIN;
-  const appPort = process.env.APP_PORT;
-  const gameEndpoint = process.env.GAME_ENDPOINT;
+  const mockGames: Array<Game> = getMockGames();
+  const appDomain: string = process.env.APP_DOMAIN;
+  const appPort: string = process.env.APP_PORT;
+  const gameEndpoint: string = process.env.GAME_ENDPOINT;
 
   beforeAll(async () => {
     const mockGameStoreProvider = {
