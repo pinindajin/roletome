@@ -216,7 +216,7 @@ describe('GameStore', () => {
     ];
 
     each(testCases).it('should create record', async (
-      games: Array<Game> ,
+      games: Array<Game>,
       mockResponse: Array<DbGame>,
       expected: StoreSaveResponse<string>,
     ) => {
@@ -230,6 +230,18 @@ describe('GameStore', () => {
 
       // assert
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe('update', async () => {
+    const testCases = [];
+
+    each(testCases).it('should update the record', async (
+      games: Array<Game>,
+      mockResponse: Array<DbGame>,
+      expected: StoreSaveResponse<string>,
+    ) => {
+
     });
   });
 });

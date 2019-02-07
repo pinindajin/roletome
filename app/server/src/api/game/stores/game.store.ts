@@ -21,7 +21,10 @@ export class GameStore implements IGameStore {
       if (request.ids && request.ids.length > 0) {
         return this.findByIds(request);
       } else {
-        const [dbGames, count] = await this.repoFind(request.pageOffset, request.pageSize);
+        const [dbGames, count] = await this.repoFind(
+          request.pageOffset,
+          request.pageSize,
+        );
         const games = dbGames.map(dbGame => {
           return new Game({
             id: dbGame.id,
@@ -30,22 +33,25 @@ export class GameStore implements IGameStore {
           });
         });
         return new StoreFindResponse<Game>({
-          pageNumber: (Math.ceil(request.pageOffset / request.pageSize) + 1),
+          pageNumber: Math.ceil(request.pageOffset / request.pageSize) + 1,
           pageSize: games.length,
           totalRecords: count,
           values: games,
-          moreRecords: (request.pageOffset + request.pageSize) < count,
+          moreRecords: request.pageOffset + request.pageSize < count,
         });
       }
-    }
-    catch (err) {
+    } catch (err) {
       this.logAndThrow(err);
     }
   }
 
   async findByIds(request: StoreFindRequest): Promise<StoreFindResponse<Game>> {
     try {
-      const [dbGames, count] = await this.repoFindByIds(request.ids, request.pageOffset, request.pageSize);
+      const [dbGames, count] = await this.repoFindByIds(
+        request.ids,
+        request.pageOffset,
+        request.pageSize,
+      );
       const games = dbGames.map(dbGame => {
         return new Game({
           id: dbGame.id,
@@ -54,18 +60,16 @@ export class GameStore implements IGameStore {
         });
       });
       const fetchedIds = games.map(game => game.id);
-      const unfetchedIds = request.ids
-        .filter(id => !fetchedIds.includes(id));
+      const unfetchedIds = request.ids.filter(id => !fetchedIds.includes(id));
       return new StoreFindResponse<Game>({
-        pageNumber: (Math.ceil(request.pageOffset / request.pageSize) + 1),
+        pageNumber: Math.ceil(request.pageOffset / request.pageSize) + 1,
         pageSize: games.length,
         totalRecords: count,
         values: games,
         unfetchedIds,
-        moreRecords: (request.pageOffset + request.pageSize) < count,
+        moreRecords: request.pageOffset + request.pageSize < count,
       });
-    }
-    catch (err) {
+    } catch (err) {
       this.logAndThrow(err);
     }
   }
@@ -84,8 +88,7 @@ export class GameStore implements IGameStore {
       } else {
         return null;
       }
-    }
-    catch (err) {
+    } catch (err) {
       this.logAndThrow(err);
     }
   }
@@ -110,48 +113,54 @@ export class GameStore implements IGameStore {
 
   async update(games: Array<Game>): Promise<StoreSaveResponse<string>> {
     try {
-      const savedGames = games
-        .filter(async game => {
-          const gameToUpdate = await this.store.findOne({ id: game.id });
-          if (gameToUpdate) {
-            gameToUpdate.name = game.name;
-            gameToUpdate.description = game.description;
-            this.store.save(gameToUpdate);
-            return true;
-          }
-        });
+      const _gamesToUpdate = await this.findByIds({
+        ids: games.map(g => g.id),
+        pageOffset: 0,
+        pageSize: 100,
+      });
+
+      const savedGames = games.filter(async game => {
+        const gameToUpdate = await this.store.findOne({ id: game.id });
+        if (gameToUpdate) {
+          gameToUpdate.name = game.name;
+          gameToUpdate.description = game.description;
+          this.store.save(gameToUpdate);
+          return true;
+        }
+      });
       const savedIds = savedGames.map(savedGame => {
         return savedGame.id;
       });
       return new StoreSaveResponse<string>({
         values: savedIds,
       });
-    }
-    catch (err) {
+    } catch (err) {
       this.logAndThrow(err);
     }
   }
 
   async delete(ids: Array<string>): Promise<StoreSaveResponse<string>> {
     try {
-      const deletedGameIds = ids
-        .filter(async id => {
-          const gameToDelete = await this.store.findOne({ id });
-          if (gameToDelete) {
-            this.store.remove(gameToDelete);
-            return true;
-          }
-        });
+      const deletedGameIds = ids.filter(async id => {
+        const gameToDelete = await this.store.findOne({ id });
+        if (gameToDelete) {
+          this.store.remove(gameToDelete);
+          return true;
+        }
+      });
       return new StoreSaveResponse<string>({
         values: ids,
       });
-    }
-    catch (err) {
+    } catch (err) {
       this.logAndThrow(err);
     }
   }
 
-  async repoFindByIds(ids: Array<string>, pageOffset: number, pageSize: number): Promise<[DbGame[], number]> {
+  async repoFindByIds(
+    ids: Array<string>,
+    pageOffset: number,
+    pageSize: number,
+  ): Promise<[DbGame[], number]> {
     return await this.store
       .createQueryBuilder()
       .select('game')
@@ -162,7 +171,10 @@ export class GameStore implements IGameStore {
       .getManyAndCount();
   }
 
-  async repoFind(pageOffset: number, pageSize: number): Promise<[DbGame[], number]> {
+  async repoFind(
+    pageOffset: number,
+    pageSize: number,
+  ): Promise<[DbGame[], number]> {
     return await this.store
       .createQueryBuilder('game')
       .skip(pageOffset)
