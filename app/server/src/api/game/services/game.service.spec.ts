@@ -39,7 +39,7 @@ describe('GameService', () => {
     mockGameStore = app.get<MockGameStore>('GameStore');
   });
 
-  describe('find', async () => {
+  describe('find', () => {
     const testCases = [
       [
         // request
@@ -114,7 +114,7 @@ describe('GameService', () => {
     );
   });
 
-  describe('findOne', async () => {
+  describe('findOne', () => {
     const testCases = [
       [
         // request
@@ -165,7 +165,7 @@ describe('GameService', () => {
     );
   });
 
-  describe('create', async () => {
+  describe('create', () => {
     const testCases = [
       [
         // request
@@ -225,7 +225,7 @@ describe('GameService', () => {
     );
   });
 
-  describe('update', async () => {
+  describe('update', () => {
     const testCases = [
       [
         // request
@@ -286,7 +286,7 @@ describe('GameService', () => {
     );
   });
 
-  describe('delete', async () => {
+  describe('delete', () => {
     const testCases = [
       [
         // request

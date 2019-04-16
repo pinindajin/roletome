@@ -2,12 +2,12 @@ import { GameStore } from './game.store';
 import { MockGameStore } from '../test/gameTestUtils';
 import { getMockGames } from '../test/data/';
 import { Test } from '@nestjs/testing';
+import 'jest';
 import each from 'jest-each';
 import { StoreFindResponse } from '../../../common/models/storeFindResponse.model';
 import { GetGamesRequest, GetGameRequest } from '../models/dtos/getGame.dto';
 import { Game } from '../models/domain/game.model';
 import { ServiceFindResponse } from '../../../common/models/serviceFindResponse.model';
-import 'jest';
 import { CreateGamesRequest, GameToCreate } from '../models/dtos';
 import { ServiceModifyResponse } from '../../../common/models/serviceModifyResponse.model';
 import { StoreSaveResponse } from '../../../common/models/storeSaveResponse.model';
@@ -43,7 +43,7 @@ describe('GameStore', () => {
     mockRepository = app.get<Repository<DbGame>>(getRepositoryToken(DbGame));
   });
 
-  describe('find', async () => {
+  describe('find', () => {
     const testCases = [
       [
         // request
@@ -114,7 +114,7 @@ describe('GameStore', () => {
     );
   });
 
-  describe('findByIds', async () => {
+  describe('findByIds', () => {
     const testCases = [
       [
         // request
@@ -162,7 +162,7 @@ describe('GameStore', () => {
     });
   });
 
-  describe('findOne', async () => {
+  describe('findOne', () => {
     const testCases = [
       [
         // request
@@ -204,7 +204,7 @@ describe('GameStore', () => {
     });
   });
 
-  describe('create', async () => {
+  describe('create', () => {
     const testCases = [
       [
         mockGames.slice(50, 82),
@@ -233,7 +233,7 @@ describe('GameStore', () => {
     });
   });
 
-  describe('update', async () => {
+  describe('update', () => {
     const testCases = [];
 
     each(testCases).it('should update the record', async (
