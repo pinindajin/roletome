@@ -58,6 +58,16 @@
     "webpack-node-externals": "^1.6.0"
   },
   "jest": {
+    "moduleNameMapper": {
+      "@api/(.*)": "<rootDir>/api/$1",
+      "@common/(.*)": "<rootDir>/common/$1",
+      "@config/(.*)": "<rootDir>/config/$1",
+      "@db/(.*)": "<rootDir>/db/$1",
+      "@logging/(.*)": "<rootDir>/logging/$1",
+      "@game/(.*)": "<rootDir>/api/game/$1",
+      "@roll/(.*)": "<rootDir>/api/roll/$1",
+      "@stat/(.*)": "<rootDir>/api/stat/$1"
+    },
     "moduleFileExtensions": [
       "js",
       "json",

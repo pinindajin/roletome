@@ -142,6 +142,28 @@ describe('GameStore', () => {
           totalRecords: 15,
         }),
       ],
+      [
+        // request
+        new StoreFindRequest({
+          pageOffset: 0,
+          pageSize: 5,
+          ids: mockGames.slice(10, 25).map(g => g.id),
+        }),
+        // mock response
+        [
+          mockGames.slice(10, 15),
+          mockGames.slice(10, 25).length,
+        ],
+        // expected
+        new StoreFindResponse<Game>({
+          pageSize: 5,
+          pageNumber: 1,
+          values: mockGames.slice(10, 15),
+          moreRecords: true,
+          unfetchedIds: mockGames.slice(15, 25).map(g => g.id),
+          totalRecords: mockGames.slice(10, 25).length,
+        }),
+      ],
     ];
 
     each(testCases).it('should retrieve correct records', async (
