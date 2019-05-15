@@ -18,7 +18,7 @@ import { ServiceModifyResponse } from '../../../common/models/serviceModifyRespo
 
 @Injectable()
 export class GameService implements IGameService {
-  constructor(@Inject('GameStore') private readonly repo: IGameStore) {}
+  constructor(@Inject('GameStore') private readonly repo: IGameStore) { }
 
   async find(request: GetGamesRequest): Promise<ServiceFindResponse<Game>> {
     const findResponse = await this.repo.find(
@@ -28,6 +28,7 @@ export class GameService implements IGameService {
         ids: request.ids,
       }),
     );
+
     return new ServiceFindResponse<Game>({
       values: findResponse.values,
       pageSize: findResponse.pageSize,

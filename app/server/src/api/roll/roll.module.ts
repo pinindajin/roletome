@@ -1,5 +1,5 @@
 import { Module, Provider } from '@nestjs/common';
-import { DbRoll } from 'db/typeOrm/dbModels/roll/roll.entity';
+import { DbRoll } from '../../db/typeOrm/dbModels/roll/roll.entity';
 import { RollService } from './services/roll.service';
 import { RollStore } from './stores/roll.store';
 import { TypeOrmModule } from '@nestjs/typeorm';

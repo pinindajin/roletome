@@ -3,7 +3,7 @@ import { GameController } from './controllers/game.controller';
 import { GameService } from './services/game.service';
 import { GameStore } from './stores/game.store';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DbGame } from 'db/typeOrm/dbModels/game/game.entity';
+import { DbGame } from '../../db/typeOrm/dbModels/game/game.entity';
 
 const gameServiceProvider: Provider = {
   provide: 'GameService',

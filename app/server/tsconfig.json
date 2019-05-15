@@ -16,7 +16,17 @@
     "sourceMap": true,
     "allowJs": true,
     "outDir": "./dist",
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "paths": {
+      "@api/*": ["api/*"],
+      "@common/*": ["common/*"],
+      "@config/*": ["config/*"],
+      "@db/*": ["db/*"],
+      "@logging/*": ["logging/*"],
+      "@game/*": ["api/game/*"],
+      "@roll/*": ["api/roll/*"],
+      "@stat/*": ["api/stat/*"]
+    },
   },
   "include": [
     "src/**/*"

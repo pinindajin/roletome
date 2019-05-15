@@ -1,6 +1,7 @@
 import { Game } from '../../../../api/game/models/domain';
 
-export const getMockGames = () => {
+// 186 records as of Dec 11 2018
+export const getMockGames = (): Array<Game> => {
   return [
     new Game({
       id: 'd28bd6cc-8766-4921-938d-3b5173efe556',
