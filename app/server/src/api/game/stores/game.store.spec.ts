@@ -267,12 +267,22 @@ describe('GameStore', () => {
       [
         mockGames.slice(13, 27),
         mockGames.slice(13, 27).map(g => new DbGame({...g})),
+        mockGames.slice(13, 27).map(g => new DbGame({...g})),
         new StoreSaveResponse<string>({
           values: mockGames.slice(13, 27).map(g => g.id),
         }),
       ],
       [
+        mockGames.slice(41, 44),
+        mockGames.slice(41, 42).map(g => new DbGame({...g})),
+        mockGames.slice(41, 42).map(g => new DbGame({...g})),
+        new StoreSaveResponse<string>({
+          values: mockGames.slice(41, 42).map(g => g.id),
+        }),
+      ],
+      [
         [mockGames[24]],
+        [new DbGame({...mockGames[24]})],
         [new DbGame({...mockGames[24]})],
         new StoreSaveResponse<string>({
           values: [mockGames[24].id],
@@ -282,16 +292,20 @@ describe('GameStore', () => {
 
     each(testCases).it('should update the record', async (
       games: Array<Game>,
-      mockResponse: Array<DbGame>,
+      mockFindResponse: Array<DbGame>,
+      mockSaveResponse: Array<DbGame>,
       expected: StoreSaveResponse<string>,
     ) => {
       // arrange
       jest
-      .spyOn(mockRepository, 'save')
-      .mockImplementation(() => mockResponse);
+        .spyOn(mockRepository, 'save')
+        .mockImplementation(() => mockSaveResponse);
+      jest
+        .spyOn(mockRepository, 'findByIds')
+        .mockImplementation(() => mockFindResponse);
 
       // act
-      const result = await gameStore.create(games);
+      const result = await gameStore.update(games);
 
       // assert
       expect(result).toEqual(expected);

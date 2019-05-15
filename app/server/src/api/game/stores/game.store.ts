@@ -95,11 +95,11 @@ export class GameStore implements IGameStore {
 
   async create(games: Array<Game>): Promise<StoreSaveResponse<string>> {
     try {
-      const dbGames = games.map(_game => {
+      const dbGames = games.map(g => {
         return new DbGame({
           id: uuid(),
-          name: _game.name,
-          description: _game.description,
+          name: g.name,
+          description: g.description,
         });
       });
       const saveResult = await this.store.save(dbGames);
@@ -113,27 +113,29 @@ export class GameStore implements IGameStore {
 
   async update(games: Array<Game>): Promise<StoreSaveResponse<string>> {
     try {
-      const _gamesToUpdate = await this.findByIds({
-        ids: games.map(g => g.id),
-        pageOffset: 0,
-        pageSize: 100,
+      /**
+       * TODO: find more efficient way to update games.
+       * TODO: document only updating 100 at a time
+       */
+      const updateableGames = await this.store.findByIds(games.map(g => g.id), {
+        take: 100,
       });
+      const gameIdsToUpdate = updateableGames.map(dbGame => dbGame.id);
+      const gamesToUpdate = games
+        .filter(g => gameIdsToUpdate.includes(g.id))
+        .map(g => {
+          return new DbGame({
+            id: uuid(),
+            name: g.name,
+            description: g.description,
+          });
+        });
+      const savedGames = await this.store.save(gamesToUpdate);
 
-      // TODO: find more efficient way to update games.
-      const savedGames = games.filter(async game => {
-        const gameToUpdate = await this.store.findOne({ id: game.id });
-        if (gameToUpdate) {
-          gameToUpdate.name = game.name;
-          gameToUpdate.description = game.description;
-          this.store.save(gameToUpdate);
-          return true;
-        }
-      });
-      const savedIds = savedGames.map(savedGame => {
-        return savedGame.id;
-      });
       return new StoreSaveResponse<string>({
-        values: savedIds,
+        values: savedGames.map(savedGame => {
+          return savedGame.id;
+        }),
       });
     } catch (err) {
       this.logAndThrow(err);
