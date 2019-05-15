@@ -311,4 +311,33 @@ describe('GameStore', () => {
       expect(result).toEqual(expected);
     });
   });
+
+  /**
+   * TODO: write delete test after refactoring to more efficient delete
+   */
+  describe('delete', () => {
+    const testCases = [
+    ];
+
+    each(testCases).it('should delete the correct records', async (
+      games: Array<Game>,
+      mockFindResponse: Array<DbGame>,
+      mockSaveResponse: Array<DbGame>,
+      expected: StoreSaveResponse<string>,
+    ) => {
+      // arrange
+      jest
+        .spyOn(mockRepository, 'save')
+        .mockImplementation(() => mockSaveResponse);
+      jest
+        .spyOn(mockRepository, 'findByIds')
+        .mockImplementation(() => mockFindResponse);
+
+      // act
+      const result = await gameStore.update(games);
+
+      // assert
+      expect(result).toEqual(expected);
+    });
+  });
 });
