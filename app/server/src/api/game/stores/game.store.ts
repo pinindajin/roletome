@@ -119,6 +119,7 @@ export class GameStore implements IGameStore {
         pageSize: 100,
       });
 
+      // TODO: find more efficient way to update games.
       const savedGames = games.filter(async game => {
         const gameToUpdate = await this.store.findOne({ id: game.id });
         if (gameToUpdate) {

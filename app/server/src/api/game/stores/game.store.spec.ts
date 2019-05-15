@@ -235,6 +235,13 @@ describe('GameStore', () => {
           values: mockGames.slice(50, 82).map(g => g.id),
         }),
       ],
+      [
+        [mockGames[66]],
+        [new DbGame({...mockGames[66]})],
+        new StoreSaveResponse<string>({
+          values: [mockGames[66].id],
+        }),
+      ],
     ];
 
     each(testCases).it('should create record', async (
@@ -256,14 +263,38 @@ describe('GameStore', () => {
   });
 
   describe('update', () => {
-    const testCases = [];
+    const testCases = [
+      [
+        mockGames.slice(13, 27),
+        mockGames.slice(13, 27).map(g => new DbGame({...g})),
+        new StoreSaveResponse<string>({
+          values: mockGames.slice(13, 27).map(g => g.id),
+        }),
+      ],
+      [
+        [mockGames[24]],
+        [new DbGame({...mockGames[24]})],
+        new StoreSaveResponse<string>({
+          values: [mockGames[24].id],
+        }),
+      ],
+    ];
 
     each(testCases).it('should update the record', async (
       games: Array<Game>,
       mockResponse: Array<DbGame>,
       expected: StoreSaveResponse<string>,
     ) => {
+      // arrange
+      jest
+      .spyOn(mockRepository, 'save')
+      .mockImplementation(() => mockResponse);
 
+      // act
+      const result = await gameStore.create(games);
+
+      // assert
+      expect(result).toEqual(expected);
     });
   });
 });
