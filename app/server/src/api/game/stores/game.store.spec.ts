@@ -303,12 +303,14 @@ describe('GameStore', () => {
       jest
         .spyOn(mockRepository, 'findByIds')
         .mockImplementation(() => mockFindResponse);
+      const mockGameIdsToFind = games.map(g => g.id);
 
       // act
       const result = await gameStore.update(games);
 
       // assert
       expect(result).toEqual(expected);
+      expect(mockRepository.findByIds).toHaveBeenCalledWith(mockGameIdsToFind);
     });
   });
 

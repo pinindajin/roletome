@@ -115,17 +115,15 @@ export class GameStore implements IGameStore {
     try {
       /**
        * TODO: find more efficient way to update games.
-       * TODO: document only updating 100 at a time
+       * TODO: try using uuid as primary column rather than autogen seq id.
        */
-      const updateableGames = await this.store.findByIds(games.map(g => g.id), {
-        take: 100,
-      });
+      const updateableGames = await this.store.findByIds(games.map(g => g.id));
       const gameIdsToUpdate = updateableGames.map(dbGame => dbGame.id);
       const gamesToUpdate = games
         .filter(g => gameIdsToUpdate.includes(g.id))
         .map(g => {
           return new DbGame({
-            id: uuid(),
+            id: g.id,
             name: g.name,
             description: g.description,
           });
@@ -145,17 +143,13 @@ export class GameStore implements IGameStore {
   async delete(ids: Array<string>): Promise<StoreSaveResponse<string>> {
     try {
       /**
-       * TODO: write more efficient delete
+       * TODO: find more efficient way to update games.
+       * TODO: try using uuid as primary column rather than autogen seq id.
        */
-      const deletedGameIds = ids.filter(async id => {
-        const gameToDelete = await this.store.findOne({ id });
-        if (gameToDelete) {
-          this.store.remove(gameToDelete);
-          return true;
-        }
-      });
+      const deleteableGames = await this.store.findByIds(ids);
+      const deletedGames = await this.store.remove(deleteableGames);
       return new StoreSaveResponse<string>({
-        values: ids,
+        values: deleteableGames.map(g => g.id),
       });
     } catch (err) {
       this.logAndThrow(err);
