@@ -20,11 +20,13 @@ import { Repository } from 'typeorm';
 import { DbGame } from '../../../db/typeOrm/dbModels/game/game.entity';
 import { StoreFindRequest } from '../../../common/models/storeFindRequest.model';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { uuidProvider } from '../../../common/functions/uuid';
+import { uuidProvider, ECommonFunctionInjectables } from '../../../common/functions/function-providers';
+import { v4 as uuid } from 'uuid';
 
 describe('GameStore', () => {
   let gameStore: GameStore;
   let mockRepository: Repository<DbGame>;
+  let mockUUID: jest.Mock;
   const mockGames: Array<Game> = getMockGames();
   const appDomain: string = process.env.APP_DOMAIN;
   const appPort: string = process.env.APP_PORT;
@@ -36,12 +38,18 @@ describe('GameStore', () => {
       useClass: Repository,
     };
 
+    const mockUUIDProvider = {
+      provide: ECommonFunctionInjectables.UUID,
+      useValue: jest.fn(uuid),
+    };
+
     const app = await Test.createTestingModule({
-      providers: [GameStore, mockGameRepoProvider, uuidProvider],
+      providers: [GameStore, mockGameRepoProvider, mockUUIDProvider],
     }).compile();
 
     gameStore = app.get<GameStore>(GameStore);
     mockRepository = app.get<Repository<DbGame>>(getRepositoryToken(DbGame));
+    mockUUID = app.get(ECommonFunctionInjectables.UUID);
   });
 
   describe('find', () => {
@@ -230,14 +238,14 @@ describe('GameStore', () => {
   describe('create', () => {
     const testCases = [
       [
-        mockGames.slice(50, 82),
+        mockGames.slice(50, 82).map(g => new Game({...g, id: null})),
         mockGames.slice(50, 82).map(g => new DbGame({...g})),
         new StoreSaveResponse<string>({
           values: mockGames.slice(50, 82).map(g => g.id),
         }),
       ],
       [
-        [mockGames[66]],
+        [mockGames[66]].map(g => new Game({...g, id: null})),
         [new DbGame({...mockGames[66]})],
         new StoreSaveResponse<string>({
           values: [mockGames[66].id],
@@ -251,6 +259,7 @@ describe('GameStore', () => {
       expected: StoreSaveResponse<string>,
     ) => {
       // arrange
+      mockUUID.mockClear();
       jest
         .spyOn(mockRepository, 'save')
         .mockImplementation(() => mockResponse);
@@ -260,6 +269,7 @@ describe('GameStore', () => {
 
       // assert
       expect(result).toEqual(expected);
+      expect(mockUUID).toHaveBeenCalledTimes(games.length);
     });
   });
 

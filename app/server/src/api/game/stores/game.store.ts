@@ -84,13 +84,9 @@ export class GameStore implements IGameStore {
   }
 
   async create(games: Array<Game>): Promise<StoreSaveResponse<string>> {
-    const dbGames = games.map(g => {
-      return new DbGame({
-        id: this.uuid(),
-        name: g.name,
-        description: g.description,
-      });
-    });
+    const dbGames = games
+      .map(g => new Game({...g, id: this.uuid()}))
+      .map(this.mapGameToDbGame);
     try {
       const saveResult = await this.store.save(dbGames);
       return new StoreSaveResponse<string>({
@@ -174,7 +170,7 @@ export class GameStore implements IGameStore {
 
   mapGameToDbGame(game: Game): DbGame {
     return new DbGame({
-      id: game.id ? game.id : this.uuid(),
+      id: game.id,
       name: game.name,
       description: game.description,
     });
