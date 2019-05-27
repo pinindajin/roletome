@@ -9,6 +9,7 @@ import {
   ValidationPipe,
   Inject,
   Put,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   GetGamesRequest,
@@ -41,18 +42,22 @@ export class GameController implements ICRUDController {
     @Query(new ValidationPipe({ transform: true }))
     request: GetGamesRequest,
   ): Promise<GetGamesResponse> {
+    if (request.pageOffset >= request.ids.length) {
+      throw new BadRequestException('pageOffset cannot be equal to or greater than number of ids.');
+    }
+
     const serviceResponse = await this.service.find(request);
 
     return new GetGamesResponse({
       games: serviceResponse.values,
       pageNumber: serviceResponse.pageNumber,
-      pageSize: serviceResponse.pageSize,
+      pageSize: request.pageSize,
       numberOfRecords: serviceResponse.values ? serviceResponse.values.length : 0,
       totalRecords: serviceResponse.totalRecords,
       nextPageLink:
         serviceResponse.moreRecords === true
           ? this.buildGamesNextPageLink(
-              serviceResponse.pageSize,
+              request.pageSize,
               serviceResponse.pageNumber,
               serviceResponse.unfetchedIds,
             )

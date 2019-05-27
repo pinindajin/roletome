@@ -43,13 +43,12 @@ export class StatController implements ICRUDController {
     return new GetStatsResponse({
       stats: serviceResponse.values,
       pageNumber: serviceResponse.pageNumber,
-      pageSize: serviceResponse.pageSize,
       numberOfRecords: serviceResponse.values ? serviceResponse.values.length : 0,
       totalRecords: serviceResponse.totalRecords,
       nextPageLink:
         serviceResponse.moreRecords === true
           ? this.buildStatsNextPageLink(
-              serviceResponse.pageSize,
+              request.pageSize,
               serviceResponse.pageNumber,
               serviceResponse.unfetchedIds,
             )

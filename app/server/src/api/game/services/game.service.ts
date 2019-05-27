@@ -32,7 +32,6 @@ export class GameService implements IGameService {
 
     return new ServiceFindResponse<Game>({
       values: findResponse.values,
-      pageSize: findResponse.pageSize,
       pageNumber: findResponse.pageNumber,
       unfetchedIds: findResponse.unfetchedIds,
       moreRecords: findResponse.moreRecords,

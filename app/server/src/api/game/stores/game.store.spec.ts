@@ -105,21 +105,21 @@ describe('GameStore', () => {
     ];
 
     each(testCases).it('should page correctly', async (
-        request: StoreFindRequest,
-        mockResponse: [DbGame[], number],
-        expected: StoreFindResponse<Game>,
-      ) => {
-        // arrange
-        jest
-          .spyOn(gameStore, 'repoFind')
-          .mockImplementation(() => mockResponse);
+      request: StoreFindRequest,
+      mockResponse: [DbGame[], number],
+      expected: StoreFindResponse<Game>,
+    ) => {
+      // arrange
+      jest
+        .spyOn(gameStore, 'repoFind')
+        .mockImplementation(() => mockResponse);
 
-        // act
-        const result = await gameStore.find(request);
+      // act
+      const result = await gameStore.find(request);
 
-        // assert
-        expect(result).toEqual(expected);
-      },
+      // assert
+      expect(result).toEqual(expected);
+    },
     );
   });
 
@@ -176,9 +176,9 @@ describe('GameStore', () => {
     ];
 
     each(testCases).it('should retrieve correct records', async (
-        request: StoreFindRequest,
-        mockResponse: [DbGame[], number],
-        expected: StoreFindResponse<Game>,
+      request: StoreFindRequest,
+      mockResponse: [DbGame[], number],
+      expected: StoreFindResponse<Game>,
     ) => {
       // arrange
       jest
@@ -205,7 +205,7 @@ describe('GameStore', () => {
           description: mockGames[55].description,
         }),
         // expected
-        new DbGame({...mockGames[55]}),
+        new DbGame({ ...mockGames[55] }),
       ],
       [
         // request
@@ -238,15 +238,15 @@ describe('GameStore', () => {
   describe('create', () => {
     const testCases = [
       [
-        mockGames.slice(50, 82).map(g => new Game({...g, id: null})),
-        mockGames.slice(50, 82).map(g => new DbGame({...g})),
+        mockGames.slice(50, 82).map(g => new Game({ ...g, id: null })),
+        mockGames.slice(50, 82).map(g => new DbGame({ ...g })),
         new StoreSaveResponse<string>({
           values: mockGames.slice(50, 82).map(g => g.id),
         }),
       ],
       [
-        [mockGames[66]].map(g => new Game({...g, id: null})),
-        [new DbGame({...mockGames[66]})],
+        [mockGames[66]].map(g => new Game({ ...g, id: null })),
+        [new DbGame({ ...mockGames[66] })],
         new StoreSaveResponse<string>({
           values: [mockGames[66].id],
         }),
@@ -277,24 +277,24 @@ describe('GameStore', () => {
     const testCases = [
       [
         mockGames.slice(13, 27),
-        mockGames.slice(13, 27).map(g => new DbGame({...g})),
-        mockGames.slice(13, 27).map(g => new DbGame({...g})),
+        mockGames.slice(13, 27).map(g => new DbGame({ ...g })),
+        mockGames.slice(13, 27).map(g => new DbGame({ ...g })),
         new StoreSaveResponse<string>({
           values: mockGames.slice(13, 27).map(g => g.id),
         }),
       ],
       [
         mockGames.slice(41, 44),
-        mockGames.slice(41, 42).map(g => new DbGame({...g})),
-        mockGames.slice(41, 42).map(g => new DbGame({...g})),
+        mockGames.slice(41, 42).map(g => new DbGame({ ...g })),
+        mockGames.slice(41, 42).map(g => new DbGame({ ...g })),
         new StoreSaveResponse<string>({
           values: mockGames.slice(41, 42).map(g => g.id),
         }),
       ],
       [
         [mockGames[24]],
-        [new DbGame({...mockGames[24]})],
-        [new DbGame({...mockGames[24]})],
+        [new DbGame({ ...mockGames[24] })],
+        [new DbGame({ ...mockGames[24] })],
         new StoreSaveResponse<string>({
           values: [mockGames[24].id],
         }),
@@ -325,29 +325,50 @@ describe('GameStore', () => {
     });
   });
 
-  /**
-   * TODO: write delete test after refactoring to more efficient delete
-   */
   describe('delete', () => {
     const testCases = [
+      [
+        mockGames.slice(13, 27).map(g => g.id),
+        mockGames.slice(13, 27).map(g => new DbGame({ ...g })),
+        mockGames.slice(13, 27).map(g => new DbGame({ ...g })),
+        new StoreSaveResponse<string>({
+          values: mockGames.slice(13, 27).map(g => g.id),
+        }),
+      ],
+      [
+        mockGames.slice(41, 44).map(g => g.id),
+        mockGames.slice(41, 42).map(g => new DbGame({ ...g })),
+        mockGames.slice(41, 42).map(g => new DbGame({ ...g })),
+        new StoreSaveResponse<string>({
+          values: mockGames.slice(41, 42).map(g => g.id),
+        }),
+      ],
+      [
+        [mockGames[24]].map(g => g.id),
+        [new DbGame({ ...mockGames[24] })],
+        [new DbGame({ ...mockGames[24] })],
+        new StoreSaveResponse<string>({
+          values: [mockGames[24].id],
+        }),
+      ],
     ];
 
     each(testCases).it('should delete the correct records', async (
-      games: Array<Game>,
+      games: Array<string>,
       mockFindResponse: Array<DbGame>,
-      mockSaveResponse: Array<DbGame>,
+      mockRemoveResponse: Array<DbGame>,
       expected: StoreSaveResponse<string>,
     ) => {
       // arrange
       jest
-        .spyOn(mockRepository, 'save')
-        .mockImplementation(() => mockSaveResponse);
+        .spyOn(mockRepository, 'remove')
+        .mockImplementation(() => mockRemoveResponse);
       jest
         .spyOn(mockRepository, 'findByIds')
         .mockImplementation(() => mockFindResponse);
 
       // act
-      const result = await gameStore.update(games);
+      const result = await gameStore.delete(games);
 
       // assert
       expect(result).toEqual(expected);

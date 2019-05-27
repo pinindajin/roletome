@@ -23,7 +23,6 @@ export class StatService implements IStatService {
     );
     return new ServiceFindResponse<Stat>({
       values: findResponse.values,
-      pageSize: findResponse.pageSize,
       pageNumber: findResponse.pageNumber,
       unfetchedIds: findResponse.unfetchedIds,
       moreRecords: findResponse.moreRecords,

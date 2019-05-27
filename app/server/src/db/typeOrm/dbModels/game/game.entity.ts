@@ -1,10 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, Generated } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Generated, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class DbGame {
-  @PrimaryGeneratedColumn() seqId: number;
-
-  @Column()
+  @PrimaryColumn({ type: 'uuid' })
   id: string;
 
   @Column() name: string;

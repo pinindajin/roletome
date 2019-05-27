@@ -44,10 +44,11 @@ export class GameStore implements IGameStore {
   async findByIds(request: StoreFindRequest): Promise<StoreFindResponse<Game>> {
     try {
       const [dbGames, count] = await this.repoFindByIds(
-        request.ids,
-        request.pageOffset,
+        request.ids.slice(request.pageOffset),
         request.pageSize,
       );
+      console.log('___');
+      console.log(count, dbGames);
       const games = dbGames.map(this.mapDbGameToGame);
       const unfetchedIds = request.ids
         .filter(id => !games.map(game => game.id)
@@ -103,9 +104,9 @@ export class GameStore implements IGameStore {
         .filter(g => updateableGames.map(dbGame => dbGame.id)
           .includes(g.id))
         .map(this.mapGameToDbGame);
-      const savedGames = await this.store.save(gamesToUpdate);
+      const updatedGames = await this.store.save(gamesToUpdate);
       return new StoreSaveResponse<string>({
-        values: savedGames.map(g => g.id),
+        values: updatedGames.map(g => g.id),
       });
     } catch (err) {
       this.logAndThrow(err);
@@ -120,9 +121,7 @@ export class GameStore implements IGameStore {
        */
       const deleteableGames = await this.store.findByIds(ids);
       const deletedGames = await this.store.remove(deleteableGames);
-      return new StoreSaveResponse<string>({
-        values: deleteableGames.map(g => g.id),
-      });
+      return new StoreSaveResponse<string>({ values: deleteableGames.map(g => g.id) });
     } catch (err) {
       this.logAndThrow(err);
     }
@@ -130,7 +129,6 @@ export class GameStore implements IGameStore {
 
   async repoFindByIds(
     ids: Array<string>,
-    pageOffset: number,
     pageSize: number,
   ): Promise<[DbGame[], number]> {
     return await this.store
@@ -138,7 +136,6 @@ export class GameStore implements IGameStore {
       .select('game')
       .from(DbGame, 'game')
       .where('game.id IN (:...ids)', { ids })
-      .skip(pageOffset)
       .take(pageSize)
       .getManyAndCount();
   }

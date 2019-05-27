@@ -62,7 +62,6 @@ describe('GameController', () => {
         }),
         // mock response
         new ServiceFindResponse<Game>({
-          pageSize: 5,
           pageNumber: 1,
           values: mockGames.slice(0, 5),
           moreRecords: true,
@@ -86,7 +85,6 @@ describe('GameController', () => {
         }),
         // mock response
         new ServiceFindResponse<Game>({
-          pageSize: 5,
           pageNumber: 2,
           values: mockGames.slice(5, 10),
           moreRecords: true,
@@ -110,7 +108,6 @@ describe('GameController', () => {
         }),
         // mock response
         new ServiceFindResponse<Game>({
-          pageSize: 6,
           pageNumber: 10,
           values: mockGames.slice(180),
           moreRecords: false,
@@ -118,7 +115,7 @@ describe('GameController', () => {
         }),
         // expected
         new GetGamesResponse({
-          pageSize: 6,
+          pageSize: 20,
           pageNumber: 10,
           numberOfRecords: 6,
           nextPageLink: null,

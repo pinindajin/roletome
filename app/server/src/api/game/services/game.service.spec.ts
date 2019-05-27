@@ -59,7 +59,6 @@ describe('GameService', () => {
         }),
         // expected
         new ServiceFindResponse<Game>({
-          pageSize: 10,
           pageNumber: 11,
           values: mockGames.slice(100, 110),
           unfetchedIds: [],
@@ -84,7 +83,6 @@ describe('GameService', () => {
         }),
         // expected
         new ServiceFindResponse<Game>({
-          pageSize: 26,
           pageNumber: 5,
           values: mockGames.slice(160),
           unfetchedIds: [],
