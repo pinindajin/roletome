@@ -20,6 +20,7 @@ import { Repository } from 'typeorm';
 import { DbGame } from '../../../db/typeOrm/dbModels/game/game.entity';
 import { StoreFindRequest } from '../../../common/models/storeFindRequest.model';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { uuidProvider } from '../../../common/functions/uuid';
 
 describe('GameStore', () => {
   let gameStore: GameStore;
@@ -36,7 +37,7 @@ describe('GameStore', () => {
     };
 
     const app = await Test.createTestingModule({
-      providers: [GameStore, mockGameRepoProvider],
+      providers: [GameStore, mockGameRepoProvider, uuidProvider],
     }).compile();
 
     gameStore = app.get<GameStore>(GameStore);

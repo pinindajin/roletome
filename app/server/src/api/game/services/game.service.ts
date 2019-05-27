@@ -15,10 +15,11 @@ import { Game } from '../models/domain/game.model';
 import { StoreFindRequest } from '../../../common/models/storeFindRequest.model';
 import { ServiceFindResponse } from '../../../common/models/serviceFindResponse.model';
 import { ServiceModifyResponse } from '../../../common/models/serviceModifyResponse.model';
+import { IGameServiceProvider } from '../game-providers';
 
 @Injectable()
 export class GameService implements IGameService {
-  constructor(@Inject('GameStore') private readonly repo: IGameStore) { }
+  constructor(@Inject('GAME_STORE') private readonly repo: IGameStore) { }
 
   async find(request: GetGamesRequest): Promise<ServiceFindResponse<Game>> {
     const findResponse = await this.repo.find(
@@ -78,3 +79,8 @@ export class GameService implements IGameService {
     });
   }
 }
+
+export const gameServiceProvider: IGameServiceProvider = {
+  provide: 'GAME_SERVICE',
+  useClass: GameService,
+};

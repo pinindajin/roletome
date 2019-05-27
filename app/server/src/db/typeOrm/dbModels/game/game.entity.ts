@@ -2,11 +2,9 @@ import { Entity, PrimaryGeneratedColumn, Column, Generated } from 'typeorm';
 
 @Entity()
 export class DbGame {
-  // // TODO: UUID
-  //  seqId: number;
+  @PrimaryGeneratedColumn() seqId: number;
 
-  // @Generated('uuid') // QueryFailedError: function uuid_generate_v4() does not exist
-  @PrimaryGeneratedColumn('uuid')
+  @Column()
   id: string;
 
   @Column() name: string;

@@ -16,6 +16,7 @@ import {
   GameToUpdate,
 } from '../models/dtos/updateGame.dto';
 import { DeleteGamesRequest } from '../models/dtos/deleteGameDto.dto';
+import { IGameStoreProvider } from '../game-providers';
 
 describe('GameService', () => {
   let gameService: GameService;
@@ -26,8 +27,8 @@ describe('GameService', () => {
   const gameEndpoint: string = process.env.GAME_ENDPOINT;
 
   beforeAll(async () => {
-    const mockGameStoreProvider = {
-      provide: 'GameStore',
+    const mockGameStoreProvider: IGameStoreProvider = {
+      provide: 'GAME_STORE',
       useClass: MockGameStore,
     };
 
@@ -36,7 +37,7 @@ describe('GameService', () => {
     }).compile();
 
     gameService = app.get<GameService>(GameService);
-    mockGameStore = app.get<MockGameStore>('GameStore');
+    mockGameStore = app.get<MockGameStore>('GAME_STORE');
   });
 
   describe('find', () => {

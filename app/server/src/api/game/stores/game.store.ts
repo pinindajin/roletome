@@ -6,14 +6,16 @@ import { DbGame } from '../../../db/typeOrm/dbModels/game/game.entity';
 import { StoreSaveResponse } from '../../../common/models/storeSaveResponse.model';
 import { StoreFindResponse } from '../../../common/models/storeFindResponse.model';
 import { StoreFindRequest } from '../../../common/models/storeFindRequest.model';
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable, NotImplementedException, Inject } from '@nestjs/common';
 import { json } from 'body-parser';
-import { v4 as uuid } from 'uuid';
+// import { v4 as uuid } from 'uuid';
+import { IGameStoreProvider } from '../game-providers';
 
 @Injectable()
 export class GameStore implements IGameStore {
   constructor(
     @InjectRepository(DbGame) private readonly store: Repository<DbGame>,
+    @Inject('UUID') private readonly uuid: () => string,
   ) {}
 
   async find(request: StoreFindRequest): Promise<StoreFindResponse<Game>> {
@@ -25,13 +27,7 @@ export class GameStore implements IGameStore {
           request.pageOffset,
           request.pageSize,
         );
-        const games = dbGames.map(dbGame => {
-          return new Game({
-            id: dbGame.id,
-            name: dbGame.name,
-            description: dbGame.description,
-          });
-        });
+        const games = dbGames.map(this.mapDbGameToGame);
         return new StoreFindResponse<Game>({
           pageNumber: Math.ceil(request.pageOffset / request.pageSize) + 1,
           pageSize: games.length,
@@ -52,13 +48,7 @@ export class GameStore implements IGameStore {
         request.pageOffset,
         request.pageSize,
       );
-      const games = dbGames.map(dbGame => {
-        return new Game({
-          id: dbGame.id,
-          name: dbGame.name,
-          description: dbGame.description,
-        });
-      });
+      const games = dbGames.map(this.mapDbGameToGame);
       const fetchedIds = games.map(game => game.id);
       const unfetchedIds = request.ids.filter(id => !fetchedIds.includes(id));
       return new StoreFindResponse<Game>({
@@ -94,14 +84,14 @@ export class GameStore implements IGameStore {
   }
 
   async create(games: Array<Game>): Promise<StoreSaveResponse<string>> {
-    try {
-      const dbGames = games.map(g => {
-        return new DbGame({
-          id: uuid(),
-          name: g.name,
-          description: g.description,
-        });
+    const dbGames = games.map(g => {
+      return new DbGame({
+        id: this.uuid(),
+        name: g.name,
+        description: g.description,
       });
+    });
+    try {
       const saveResult = await this.store.save(dbGames);
       return new StoreSaveResponse<string>({
         values: saveResult.map(result => result.id),
@@ -182,6 +172,22 @@ export class GameStore implements IGameStore {
       .getManyAndCount();
   }
 
+  mapGameToDbGame(game: Game): DbGame {
+    return new DbGame({
+      id: game.id ? game.id : this.uuid(),
+      name: game.name,
+      description: game.description,
+    });
+  }
+
+  mapDbGameToGame(dbGame: DbGame): Game {
+    return new Game({
+      id: dbGame.id,
+      name: dbGame.name,
+      description: dbGame.description,
+    });
+  }
+
   // Temp Function
   private logAndThrow(err) {
     const l = console.log;
@@ -189,3 +195,8 @@ export class GameStore implements IGameStore {
     throw err;
   }
 }
+
+export const gameStoreProvider: IGameStoreProvider = {
+  provide: 'GAME_STORE',
+  useClass: GameStore,
+};

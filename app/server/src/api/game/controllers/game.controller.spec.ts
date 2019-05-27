@@ -24,6 +24,7 @@ import { HTTPVERB } from '../../../common/models/httpVerb.type';
 import { ServiceModifyResponse } from '../../../common/models/serviceModifyResponse.model';
 import * as dotenv from 'dotenv';
 import { AppConfigService } from '../../../config/appConfig.service';
+import { IGameServiceProvider } from '../game-providers';
 dotenv.config();
 
 const l = console.log;
@@ -37,8 +38,8 @@ describe('GameController', () => {
   const gameEndpoint: string = process.env.GAME_ENDPOINT;
 
   beforeAll(async () => {
-    const mockGameServiceProvider = {
-      provide: 'GameService',
+    const mockGameServiceProvider: IGameServiceProvider = {
+      provide: 'GAME_SERVICE',
       useClass: MockGameService,
     };
 
@@ -48,7 +49,7 @@ describe('GameController', () => {
     }).compile();
 
     gameController = app.get<GameController>(GameController);
-    mockGameService = app.get<MockGameService>('GameService');
+    mockGameService = app.get<MockGameService>('GAME_SERVICE');
   });
 
   describe('find', () => {

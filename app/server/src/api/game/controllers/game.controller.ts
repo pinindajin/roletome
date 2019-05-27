@@ -33,7 +33,7 @@ const x = console.log;
 
 @Controller(`api/${APP_CONFIG.CONTROLLER_CONFIGS.get(APPCONFIGKEYS.GAME_ENDPOINT)}`)
 export class GameController implements ICRUDController {
-  constructor(@Inject('GameService') private readonly service: IGameService) {}
+  constructor(@Inject('GAME_SERVICE') private readonly service: IGameService) {}
 
   @Get()
   async find(
