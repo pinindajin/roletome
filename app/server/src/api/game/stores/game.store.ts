@@ -9,7 +9,7 @@ import { StoreFindRequest } from '../../../common/models/storeFindRequest.model'
 import { Injectable, NotImplementedException, Inject } from '@nestjs/common';
 import { json } from 'body-parser';
 // import { v4 as uuid } from 'uuid';
-import { IGameStoreProvider } from '../game-providers';
+import { IGameStoreProvider, EGameInjectable } from '../game-providers';
 
 @Injectable()
 export class GameStore implements IGameStore {
@@ -197,6 +197,6 @@ export class GameStore implements IGameStore {
 }
 
 export const gameStoreProvider: IGameStoreProvider = {
-  provide: 'GAME_STORE',
+  provide: EGameInjectable.GAME_STORE,
   useClass: GameStore,
 };

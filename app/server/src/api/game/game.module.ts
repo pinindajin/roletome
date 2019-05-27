@@ -4,7 +4,7 @@ import { GameService, gameServiceProvider } from './services/game.service';
 import { GameStore, gameStoreProvider } from './stores/game.store';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DbGame } from '../../db/typeOrm/dbModels/game/game.entity';
-import { IGameServiceProvider, GameProvidable, IGameStoreProvider } from './game-providers';
+import { IGameServiceProvider, IGameStoreProvider } from './game-providers';
 import { uuidProvider } from '../../common/functions/uuid';
 
 @Module({

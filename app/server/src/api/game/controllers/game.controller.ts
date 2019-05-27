@@ -27,13 +27,14 @@ import { Hyperlink } from '../../../common/models/hyperlink.model';
 import { HTTPVERB } from '../../../common/models/httpVerb.type';
 import { ICRUDController } from '../../../common/interfaces/controller/ICrudController.interface';
 import { APPCONFIGKEYS, APP_CONFIG } from '../../../config/appConfig.config';
+import { EGameInjectable } from '../game-providers';
 
 // dev
 const x = console.log;
 
 @Controller(`api/${APP_CONFIG.CONTROLLER_CONFIGS.get(APPCONFIGKEYS.GAME_ENDPOINT)}`)
 export class GameController implements ICRUDController {
-  constructor(@Inject('GAME_SERVICE') private readonly service: IGameService) {}
+  constructor(@Inject(EGameInjectable.GAME_SERVICE) private readonly service: IGameService) {}
 
   @Get()
   async find(
