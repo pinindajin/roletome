@@ -42,13 +42,15 @@ export class GameStore implements IGameStore {
   }
 
   async findByIds(request: StoreFindRequest): Promise<StoreFindResponse<Game>> {
+    const idsToTake = request.pageSize > (request.ids.length - request.pageOffset)
+      ? (request.ids.length - request.pageOffset)
+      : request.pageSize;
     try {
       const [dbGames, count] = await this.repoFindByIds(
-        request.ids.slice(request.pageOffset),
-        request.pageSize,
+        request.ids,
+        request.pageOffset,
+        idsToTake,
       );
-      console.log('___');
-      console.log(count, dbGames);
       const games = dbGames.map(this.mapDbGameToGame);
       const unfetchedIds = request.ids
         .filter(id => !games.map(game => game.id)
@@ -129,25 +131,27 @@ export class GameStore implements IGameStore {
 
   async repoFindByIds(
     ids: Array<string>,
-    pageSize: number,
+    recordsToSkip: number,
+    recordsToTake: number,
   ): Promise<[DbGame[], number]> {
     return await this.store
       .createQueryBuilder()
       .select('game')
       .from(DbGame, 'game')
       .where('game.id IN (:...ids)', { ids })
-      .take(pageSize)
+      .skip(recordsToSkip)
+      .take(recordsToTake)
       .getManyAndCount();
   }
 
   async repoFind(
-    pageOffset: number,
-    pageSize: number,
+    recordsToSkip: number,
+    recordsToTake: number,
   ): Promise<[DbGame[], number]> {
     return await this.store
       .createQueryBuilder('game')
-      .skip(pageOffset)
-      .take(pageSize)
+      .skip(recordsToSkip)
+      .take(recordsToTake)
       .getManyAndCount();
   }
 

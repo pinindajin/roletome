@@ -29,7 +29,10 @@ export class GameService implements IGameService {
         ids: request.ids,
       }),
     );
-
+    console.log('___');
+    console.log(request.ids);
+    console.log(findResponse.totalRecords, findResponse.values.map(i => i.id));
+    console.log(findResponse.unfetchedIds);
     return new ServiceFindResponse<Game>({
       values: findResponse.values,
       pageNumber: findResponse.pageNumber,
