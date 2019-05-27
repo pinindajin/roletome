@@ -16,7 +16,7 @@ export class GameStore implements IGameStore {
   constructor(
     @InjectRepository(DbGame) private readonly store: Repository<DbGame>,
     @Inject('UUID') private readonly uuid: () => string,
-  ) {}
+  ) { }
 
   async find(request: StoreFindRequest): Promise<StoreFindResponse<Game>> {
     try {
@@ -49,8 +49,9 @@ export class GameStore implements IGameStore {
         request.pageSize,
       );
       const games = dbGames.map(this.mapDbGameToGame);
-      const fetchedIds = games.map(game => game.id);
-      const unfetchedIds = request.ids.filter(id => !fetchedIds.includes(id));
+      const unfetchedIds = request.ids
+        .filter(id => !games.map(game => game.id)
+          .includes(id));
       return new StoreFindResponse<Game>({
         pageNumber: Math.ceil(request.pageOffset / request.pageSize) + 1,
         pageSize: games.length,
@@ -66,9 +67,7 @@ export class GameStore implements IGameStore {
 
   async findOne(id: string): Promise<Game> {
     try {
-      const dbGame = await this.store.findOne({
-        id,
-      });
+      const dbGame = await this.store.findOne({ id });
       if (dbGame) {
         return new Game({
           id: dbGame.id,
@@ -85,7 +84,7 @@ export class GameStore implements IGameStore {
 
   async create(games: Array<Game>): Promise<StoreSaveResponse<string>> {
     const dbGames = games
-      .map(g => new Game({...g, id: this.uuid()}))
+      .map(g => new Game({ ...g, id: this.uuid() }))
       .map(this.mapGameToDbGame);
     try {
       const saveResult = await this.store.save(dbGames);
@@ -99,27 +98,14 @@ export class GameStore implements IGameStore {
 
   async update(games: Array<Game>): Promise<StoreSaveResponse<string>> {
     try {
-      /**
-       * TODO: find more efficient way to update games.
-       * TODO: try using uuid as primary column rather than autogen seq id.
-       */
       const updateableGames = await this.store.findByIds(games.map(g => g.id));
-      const gameIdsToUpdate = updateableGames.map(dbGame => dbGame.id);
       const gamesToUpdate = games
-        .filter(g => gameIdsToUpdate.includes(g.id))
-        .map(g => {
-          return new DbGame({
-            id: g.id,
-            name: g.name,
-            description: g.description,
-          });
-        });
+        .filter(g => updateableGames.map(dbGame => dbGame.id)
+          .includes(g.id))
+        .map(this.mapGameToDbGame);
       const savedGames = await this.store.save(gamesToUpdate);
-
       return new StoreSaveResponse<string>({
-        values: savedGames.map(savedGame => {
-          return savedGame.id;
-        }),
+        values: savedGames.map(g => g.id),
       });
     } catch (err) {
       this.logAndThrow(err);
