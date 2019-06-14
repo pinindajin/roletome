@@ -15,10 +15,11 @@ import { Game } from '../models/domain/game.model';
 import { StoreFindRequest } from '../../../common/models/storeFindRequest.model';
 import { ServiceFindResponse } from '../../../common/models/serviceFindResponse.model';
 import { ServiceModifyResponse } from '../../../common/models/serviceModifyResponse.model';
+import { IGameServiceProvider, EGameInjectable } from '../game-providers';
 
 @Injectable()
 export class GameService implements IGameService {
-  constructor(@Inject('GameStore') private readonly repo: IGameStore) { }
+  constructor(@Inject(EGameInjectable.GAME_STORE) private readonly repo: IGameStore) { }
 
   async find(request: GetGamesRequest): Promise<ServiceFindResponse<Game>> {
     const findResponse = await this.repo.find(
@@ -28,10 +29,12 @@ export class GameService implements IGameService {
         ids: request.ids,
       }),
     );
-
+    // console.log('___');
+    // console.log(request.ids);
+    // console.log(findResponse.totalRecords, findResponse.values.map(i => i.id));
+    // console.log(findResponse.unfetchedIds);
     return new ServiceFindResponse<Game>({
       values: findResponse.values,
-      pageSize: findResponse.pageSize,
       pageNumber: findResponse.pageNumber,
       unfetchedIds: findResponse.unfetchedIds,
       moreRecords: findResponse.moreRecords,
@@ -78,3 +81,8 @@ export class GameService implements IGameService {
     });
   }
 }
+
+export const gameServiceProvider: IGameServiceProvider = {
+  provide: EGameInjectable.GAME_SERVICE,
+  useClass: GameService,
+};

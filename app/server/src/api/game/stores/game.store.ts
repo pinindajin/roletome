@@ -6,15 +6,17 @@ import { DbGame } from '../../../db/typeOrm/dbModels/game/game.entity';
 import { StoreSaveResponse } from '../../../common/models/storeSaveResponse.model';
 import { StoreFindResponse } from '../../../common/models/storeFindResponse.model';
 import { StoreFindRequest } from '../../../common/models/storeFindRequest.model';
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable, NotImplementedException, Inject } from '@nestjs/common';
 import { json } from 'body-parser';
-import { v4 as uuid } from 'uuid';
+// import { v4 as uuid } from 'uuid';
+import { IGameStoreProvider, EGameInjectable } from '../game-providers';
 
 @Injectable()
 export class GameStore implements IGameStore {
   constructor(
     @InjectRepository(DbGame) private readonly store: Repository<DbGame>,
-  ) {}
+    @Inject('UUID') private readonly uuid: () => string,
+  ) { }
 
   async find(request: StoreFindRequest): Promise<StoreFindResponse<Game>> {
     try {
@@ -25,13 +27,7 @@ export class GameStore implements IGameStore {
           request.pageOffset,
           request.pageSize,
         );
-        const games = dbGames.map(dbGame => {
-          return new Game({
-            id: dbGame.id,
-            name: dbGame.name,
-            description: dbGame.description,
-          });
-        });
+        const games = dbGames.map(this.mapDbGameToGame);
         return new StoreFindResponse<Game>({
           pageNumber: Math.ceil(request.pageOffset / request.pageSize) + 1,
           pageSize: games.length,
@@ -46,21 +42,19 @@ export class GameStore implements IGameStore {
   }
 
   async findByIds(request: StoreFindRequest): Promise<StoreFindResponse<Game>> {
+    const idsToTake = request.pageSize > (request.ids.length - request.pageOffset)
+      ? (request.ids.length - request.pageOffset)
+      : request.pageSize;
     try {
       const [dbGames, count] = await this.repoFindByIds(
         request.ids,
         request.pageOffset,
-        request.pageSize,
+        idsToTake,
       );
-      const games = dbGames.map(dbGame => {
-        return new Game({
-          id: dbGame.id,
-          name: dbGame.name,
-          description: dbGame.description,
-        });
-      });
-      const fetchedIds = games.map(game => game.id);
-      const unfetchedIds = request.ids.filter(id => !fetchedIds.includes(id));
+      const games = dbGames.map(this.mapDbGameToGame);
+      const unfetchedIds = request.ids
+        .filter(id => !games.map(game => game.id)
+          .includes(id));
       return new StoreFindResponse<Game>({
         pageNumber: Math.ceil(request.pageOffset / request.pageSize) + 1,
         pageSize: games.length,
@@ -76,9 +70,7 @@ export class GameStore implements IGameStore {
 
   async findOne(id: string): Promise<Game> {
     try {
-      const dbGame = await this.store.findOne({
-        id,
-      });
+      const dbGame = await this.store.findOne({ id });
       if (dbGame) {
         return new Game({
           id: dbGame.id,
@@ -94,14 +86,10 @@ export class GameStore implements IGameStore {
   }
 
   async create(games: Array<Game>): Promise<StoreSaveResponse<string>> {
+    const dbGames = games
+      .map(g => new Game({ ...g, id: this.uuid() }))
+      .map(this.mapGameToDbGame);
     try {
-      const dbGames = games.map(g => {
-        return new DbGame({
-          id: uuid(),
-          name: g.name,
-          description: g.description,
-        });
-      });
       const saveResult = await this.store.save(dbGames);
       return new StoreSaveResponse<string>({
         values: saveResult.map(result => result.id),
@@ -113,29 +101,14 @@ export class GameStore implements IGameStore {
 
   async update(games: Array<Game>): Promise<StoreSaveResponse<string>> {
     try {
-      /**
-       * TODO: find more efficient way to update games.
-       * TODO: document only updating 100 at a time
-       */
-      const updateableGames = await this.store.findByIds(games.map(g => g.id), {
-        take: 100,
-      });
-      const gameIdsToUpdate = updateableGames.map(dbGame => dbGame.id);
+      const updateableGames = await this.store.findByIds(games.map(g => g.id));
       const gamesToUpdate = games
-        .filter(g => gameIdsToUpdate.includes(g.id))
-        .map(g => {
-          return new DbGame({
-            id: uuid(),
-            name: g.name,
-            description: g.description,
-          });
-        });
-      const savedGames = await this.store.save(gamesToUpdate);
-
+        .filter(g => updateableGames.map(dbGame => dbGame.id)
+          .includes(g.id))
+        .map(this.mapGameToDbGame);
+      const updatedGames = await this.store.save(gamesToUpdate);
       return new StoreSaveResponse<string>({
-        values: savedGames.map(savedGame => {
-          return savedGame.id;
-        }),
+        values: updatedGames.map(g => g.id),
       });
     } catch (err) {
       this.logAndThrow(err);
@@ -144,16 +117,13 @@ export class GameStore implements IGameStore {
 
   async delete(ids: Array<string>): Promise<StoreSaveResponse<string>> {
     try {
-      const deletedGameIds = ids.filter(async id => {
-        const gameToDelete = await this.store.findOne({ id });
-        if (gameToDelete) {
-          this.store.remove(gameToDelete);
-          return true;
-        }
-      });
-      return new StoreSaveResponse<string>({
-        values: ids,
-      });
+      /**
+       * TODO: find more efficient way to update games.
+       * TODO: try using uuid as primary column rather than autogen seq id.
+       */
+      const deleteableGames = await this.store.findByIds(ids);
+      const deletedGames = await this.store.remove(deleteableGames);
+      return new StoreSaveResponse<string>({ values: deleteableGames.map(g => g.id) });
     } catch (err) {
       this.logAndThrow(err);
     }
@@ -161,28 +131,44 @@ export class GameStore implements IGameStore {
 
   async repoFindByIds(
     ids: Array<string>,
-    pageOffset: number,
-    pageSize: number,
+    recordsToSkip: number,
+    recordsToTake: number,
   ): Promise<[DbGame[], number]> {
     return await this.store
       .createQueryBuilder()
       .select('game')
       .from(DbGame, 'game')
       .where('game.id IN (:...ids)', { ids })
-      .skip(pageOffset)
-      .take(pageSize)
+      .skip(recordsToSkip)
+      .take(recordsToTake)
       .getManyAndCount();
   }
 
   async repoFind(
-    pageOffset: number,
-    pageSize: number,
+    recordsToSkip: number,
+    recordsToTake: number,
   ): Promise<[DbGame[], number]> {
     return await this.store
       .createQueryBuilder('game')
-      .skip(pageOffset)
-      .take(pageSize)
+      .skip(recordsToSkip)
+      .take(recordsToTake)
       .getManyAndCount();
+  }
+
+  mapGameToDbGame(game: Game): DbGame {
+    return new DbGame({
+      id: game.id,
+      name: game.name,
+      description: game.description,
+    });
+  }
+
+  mapDbGameToGame(dbGame: DbGame): Game {
+    return new Game({
+      id: dbGame.id,
+      name: dbGame.name,
+      description: dbGame.description,
+    });
   }
 
   // Temp Function
@@ -192,3 +178,8 @@ export class GameStore implements IGameStore {
     throw err;
   }
 }
+
+export const gameStoreProvider: IGameStoreProvider = {
+  provide: EGameInjectable.GAME_STORE,
+  useClass: GameStore,
+};

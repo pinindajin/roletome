@@ -9,6 +9,7 @@ import {
   ValidationPipe,
   Inject,
   Put,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   GetGamesRequest,
@@ -27,31 +28,37 @@ import { Hyperlink } from '../../../common/models/hyperlink.model';
 import { HTTPVERB } from '../../../common/models/httpVerb.type';
 import { ICRUDController } from '../../../common/interfaces/controller/ICrudController.interface';
 import { APPCONFIGKEYS, APP_CONFIG } from '../../../config/appConfig.config';
+import { EGameInjectable } from '../game-providers';
+import request from 'supertest';
 
 // dev
 const x = console.log;
 
 @Controller(`api/${APP_CONFIG.CONTROLLER_CONFIGS.get(APPCONFIGKEYS.GAME_ENDPOINT)}`)
 export class GameController implements ICRUDController {
-  constructor(@Inject('GameService') private readonly service: IGameService) {}
+  constructor(@Inject(EGameInjectable.GAME_SERVICE) private readonly service: IGameService) {}
 
   @Get()
   async find(
     @Query(new ValidationPipe({ transform: true }))
     request: GetGamesRequest,
   ): Promise<GetGamesResponse> {
+    if (request.ids && request.ids.length > 0 && request.pageOffset >= request.ids.length) {
+      return new BadRequestException('pageOffset cannot be equal to or greater than number of ids.');
+    }
+
     const serviceResponse = await this.service.find(request);
 
     return new GetGamesResponse({
       games: serviceResponse.values,
       pageNumber: serviceResponse.pageNumber,
-      pageSize: serviceResponse.pageSize,
+      pageSize: request.pageSize,
       numberOfRecords: serviceResponse.values ? serviceResponse.values.length : 0,
       totalRecords: serviceResponse.totalRecords,
       nextPageLink:
         serviceResponse.moreRecords === true
           ? this.buildGamesNextPageLink(
-              serviceResponse.pageSize,
+              request.pageSize,
               serviceResponse.pageNumber,
               serviceResponse.unfetchedIds,
             )

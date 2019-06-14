@@ -3,10 +3,11 @@ import * as dotenv from 'dotenv';
 import { ConnectionOptions } from 'typeorm';
 import { DbGame } from './dbModels/game/game.entity';
 import { DbRoll } from './dbModels/roll/roll.entity';
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 dotenv.config();
 
-export const typeOrmPostgresConfig: ConnectionOptions = {
+export const typeOrmPostgresConfig: PostgresConnectionOptions = {
   type: 'postgres',
   host: process.env.TYPEORM_POSTGRES_HOST,
   port: parseInt(process.env.TYPEORM_POSTGRES_PORT, 10),

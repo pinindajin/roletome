@@ -16,6 +16,7 @@ import {
   GameToUpdate,
 } from '../models/dtos/updateGame.dto';
 import { DeleteGamesRequest } from '../models/dtos/deleteGameDto.dto';
+import { IGameStoreProvider, EGameInjectable } from '../game-providers';
 
 describe('GameService', () => {
   let gameService: GameService;
@@ -26,8 +27,8 @@ describe('GameService', () => {
   const gameEndpoint: string = process.env.GAME_ENDPOINT;
 
   beforeAll(async () => {
-    const mockGameStoreProvider = {
-      provide: 'GameStore',
+    const mockGameStoreProvider: IGameStoreProvider = {
+      provide: EGameInjectable.GAME_STORE,
       useClass: MockGameStore,
     };
 
@@ -36,7 +37,7 @@ describe('GameService', () => {
     }).compile();
 
     gameService = app.get<GameService>(GameService);
-    mockGameStore = app.get<MockGameStore>('GameStore');
+    mockGameStore = app.get<MockGameStore>(EGameInjectable.GAME_STORE);
   });
 
   describe('find', () => {
@@ -58,7 +59,6 @@ describe('GameService', () => {
         }),
         // expected
         new ServiceFindResponse<Game>({
-          pageSize: 10,
           pageNumber: 11,
           values: mockGames.slice(100, 110),
           unfetchedIds: [],
@@ -83,7 +83,6 @@ describe('GameService', () => {
         }),
         // expected
         new ServiceFindResponse<Game>({
-          pageSize: 26,
           pageNumber: 5,
           values: mockGames.slice(160),
           unfetchedIds: [],

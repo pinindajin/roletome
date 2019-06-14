@@ -24,7 +24,6 @@ export class RollService implements IRollService {
     );
     return new ServiceFindResponse<Roll>({
       values: findResponse.values,
-      pageSize: findResponse.pageSize,
       pageNumber: findResponse.pageNumber,
       unfetchedIds: findResponse.unfetchedIds,
       moreRecords: findResponse.moreRecords,

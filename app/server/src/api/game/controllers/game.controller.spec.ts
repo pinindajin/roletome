@@ -24,6 +24,7 @@ import { HTTPVERB } from '../../../common/models/httpVerb.type';
 import { ServiceModifyResponse } from '../../../common/models/serviceModifyResponse.model';
 import * as dotenv from 'dotenv';
 import { AppConfigService } from '../../../config/appConfig.service';
+import { IGameServiceProvider, EGameInjectable } from '../game-providers';
 dotenv.config();
 
 const l = console.log;
@@ -37,8 +38,8 @@ describe('GameController', () => {
   const gameEndpoint: string = process.env.GAME_ENDPOINT;
 
   beforeAll(async () => {
-    const mockGameServiceProvider = {
-      provide: 'GameService',
+    const mockGameServiceProvider: IGameServiceProvider = {
+      provide: EGameInjectable.GAME_SERVICE,
       useClass: MockGameService,
     };
 
@@ -48,7 +49,7 @@ describe('GameController', () => {
     }).compile();
 
     gameController = app.get<GameController>(GameController);
-    mockGameService = app.get<MockGameService>('GameService');
+    mockGameService = app.get<MockGameService>(EGameInjectable.GAME_SERVICE);
   });
 
   describe('find', () => {
@@ -61,7 +62,6 @@ describe('GameController', () => {
         }),
         // mock response
         new ServiceFindResponse<Game>({
-          pageSize: 5,
           pageNumber: 1,
           values: mockGames.slice(0, 5),
           moreRecords: true,
@@ -85,7 +85,6 @@ describe('GameController', () => {
         }),
         // mock response
         new ServiceFindResponse<Game>({
-          pageSize: 5,
           pageNumber: 2,
           values: mockGames.slice(5, 10),
           moreRecords: true,
@@ -109,7 +108,6 @@ describe('GameController', () => {
         }),
         // mock response
         new ServiceFindResponse<Game>({
-          pageSize: 6,
           pageNumber: 10,
           values: mockGames.slice(180),
           moreRecords: false,
@@ -117,7 +115,7 @@ describe('GameController', () => {
         }),
         // expected
         new GetGamesResponse({
-          pageSize: 6,
+          pageSize: 20,
           pageNumber: 10,
           numberOfRecords: 6,
           nextPageLink: null,
