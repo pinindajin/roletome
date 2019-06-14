@@ -29,6 +29,7 @@ import { HTTPVERB } from '../../../common/models/httpVerb.type';
 import { ICRUDController } from '../../../common/interfaces/controller/ICrudController.interface';
 import { APPCONFIGKEYS, APP_CONFIG } from '../../../config/appConfig.config';
 import { EGameInjectable } from '../game-providers';
+import request from 'supertest';
 
 // dev
 const x = console.log;
@@ -42,8 +43,8 @@ export class GameController implements ICRUDController {
     @Query(new ValidationPipe({ transform: true }))
     request: GetGamesRequest,
   ): Promise<GetGamesResponse> {
-    if (request.pageOffset >= request.ids.length) {
-      throw new BadRequestException('pageOffset cannot be equal to or greater than number of ids.');
+    if (request.ids && request.ids.length > 0 && request.pageOffset >= request.ids.length) {
+      return new BadRequestException('pageOffset cannot be equal to or greater than number of ids.');
     }
 
     const serviceResponse = await this.service.find(request);
