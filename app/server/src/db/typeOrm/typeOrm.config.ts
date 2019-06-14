@@ -2,7 +2,6 @@
 import * as dotenv from 'dotenv';
 import { ConnectionOptions } from 'typeorm';
 import { DbGame } from './dbModels/game/game.entity';
-import { DbRoll } from './dbModels/roll/roll.entity';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 dotenv.config();
@@ -14,6 +13,6 @@ export const typeOrmPostgresConfig: PostgresConnectionOptions = {
   username: process.env.TYPEORM_POSTGRES_USERNAME,
   password: process.env.TYPEORM_POSTGRES_PASSWORD,
   database: process.env.TYPEORM_POSTGRES_DATABASE,
-  entities: [DbGame, DbRoll],
+  entities: [DbGame],
   synchronize: process.env.TYPEORM_POSTGRES_SYNC === 'ON' ? true : false,
 };

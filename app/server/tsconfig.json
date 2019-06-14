@@ -20,9 +20,7 @@
       "@config/*": ["config/*"],
       "@db/*": ["db/*"],
       "@logging/*": ["logging/*"],
-      "@game/*": ["api/game/*"],
-      "@roll/*": ["api/roll/*"],
-      "@stat/*": ["api/stat/*"]
+      "@game/*": ["api/game/*"]
     }
   },
   "include": ["src/**/*"],

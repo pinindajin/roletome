@@ -1,3 +1,5 @@
+import { HttpException } from '@nestjs/common';
+
 export interface ICRUDController {
   find(request: any): Promise<any>;
   findOne(request: any): Promise<any>;

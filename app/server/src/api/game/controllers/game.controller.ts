@@ -10,6 +10,7 @@ import {
   Inject,
   Put,
   BadRequestException,
+  HttpException,
 } from '@nestjs/common';
 import {
   GetGamesRequest,
@@ -44,7 +45,7 @@ export class GameController implements ICRUDController {
     request: GetGamesRequest,
   ): Promise<GetGamesResponse> {
     if (request.ids && request.ids.length > 0 && request.pageOffset >= request.ids.length) {
-      return new BadRequestException('pageOffset cannot be equal to or greater than number of ids.');
+      throw new BadRequestException('pageOffset cannot be equal to or greater than number of ids.');
     }
 
     const serviceResponse = await this.service.find(request);
