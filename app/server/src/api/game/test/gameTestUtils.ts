@@ -17,6 +17,29 @@ import {
 } from '../../../common/interfaces/store';
 import { StoreFindResponse } from '../../../common/models/storeFindResponse.model';
 import { StoreSaveResponse } from '../../../common/models/storeSaveResponse.model';
+import { ServiceModifyResponse } from '../../../common/models/serviceModifyResponse.model';
+
+export class MockGameService implements IGameService {
+  async create(request: CreateGamesRequest): Promise<ServiceModifyResponse> {
+    return new ServiceModifyResponse();
+  }
+
+  async delete(request: DeleteGamesRequest): Promise<ServiceModifyResponse> {
+    return new ServiceModifyResponse();
+  }
+
+  async find(request: GetGamesRequest): Promise<ServiceFindResponse<Game>> {
+    return new ServiceFindResponse();
+  }
+
+  async findOne(id: string): Promise<Game> {
+    return new Game();
+  }
+
+  async update(request: UpdateGamesRequest): Promise<ServiceModifyResponse> {
+    return new ServiceModifyResponse();
+  }
+}
 
 export class MockGameStore implements IGameStore {
   async find(ids: IStoreFindRequest): Promise<IStoreFindResponse<Game>> {
@@ -37,27 +60,5 @@ export class MockGameStore implements IGameStore {
 
   async delete(ids: Array<string>): Promise<IStoreSaveResponse<string>> {
     return new StoreSaveResponse();
-  }
-}
-
-export class MockGameService implements IGameService {
-  async find(request: GetGamesRequest): Promise<ServiceFindResponse<Game>> {
-    return new ServiceFindResponse();
-  }
-
-  async findOne(id: string): Promise<Game> {
-    return new Game();
-  }
-
-  async create(request: CreateGamesRequest): Promise<CreateGamesResponse> {
-    return new CreateGamesResponse();
-  }
-
-  async update(request: UpdateGamesRequest): Promise<UpdateGamesResponse> {
-    return new UpdateGamesResponse();
-  }
-
-  async delete(request: DeleteGamesRequest): Promise<DeleteGamesResponse> {
-    return new DeleteGamesResponse();
   }
 }
